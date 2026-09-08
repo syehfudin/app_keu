@@ -21,44 +21,46 @@ class DashboardController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $title = 'Dashboard';
         $role = strtolower(Auth::user()->roles[0]->name);
         $isAdminOrManager = in_array($role, ['admin', 'manager']);
 
-        // Today and current month/year
-        $today = date('Y-m-d');
-        $currentMonth = date('n');
-        $currentYear = date('Y');
+        $tanggalInput = $request->input('tanggal', date('d-m-Y'));
+        $bulanInput = $request->input('bulan', date('Y-m'));
+
+        $tanggal = date('Y-m-d', strtotime($tanggalInput));
+        $tanggalDisplay = date('d-m-Y', strtotime($tanggal));
+
+        $bulanParts = explode('-', $bulanInput);
+        $selectedYear = $bulanParts[0] ?? date('Y');
+        $selectedMonth = $bulanParts[1] ?? date('m');
+        $bulanDisplay = date('F Y', mktime(0, 0, 0, $selectedMonth, 1, $selectedYear));
 
         $accessibleIds = $this->getAccessiblePegawaiIds();
 
-        // 1. Report per Penghimpun - Daily
-        $dailyPenghimpun = $this->getPenghimpunReport($today, 'daily', $accessibleIds);
+        $dailyPenghimpun = $this->getPenghimpunReport($tanggal, 'daily', $accessibleIds);
+        $monthlyPenghimpun = $this->getPenghimpunReport($selectedYear . '-' . $selectedMonth, 'monthly', $accessibleIds);
 
-        // 2. Report per Penghimpun - Monthly
-        $monthlyPenghimpun = $this->getPenghimpunReport($currentYear . '-' . str_pad($currentMonth, 2, '0', STR_PAD_LEFT), 'monthly', $accessibleIds);
-
-        // 3. Report per Supervisor - Daily & Monthly (Admin/Manager only)
         $dailySupervisor = [];
         $monthlySupervisor = [];
         if ($isAdminOrManager) {
-            $dailySupervisor = $this->getSupervisorReport($today, 'daily');
-            $monthlySupervisor = $this->getSupervisorReport($currentYear . '-' . str_pad($currentMonth, 2, '0', STR_PAD_LEFT), 'monthly');
+            $dailySupervisor = $this->getSupervisorReport($tanggal, 'daily');
+            $monthlySupervisor = $this->getSupervisorReport($selectedYear . '-' . $selectedMonth, 'monthly');
         }
 
-        // 4. Yearly Report per Supervisor
         $yearlySupervisor = [];
         if ($isAdminOrManager) {
-            $yearlySupervisor = $this->getSupervisorYearlyReport($currentYear);
+            $yearlySupervisor = $this->getSupervisorYearlyReport($selectedYear);
         }
 
         return view('dashboard.index', compact(
             'title', 'role', 'isAdminOrManager',
             'dailyPenghimpun', 'monthlyPenghimpun',
             'dailySupervisor', 'monthlySupervisor',
-            'yearlySupervisor', 'currentYear'
+            'yearlySupervisor', 'selectedYear',
+            'tanggalInput', 'bulanInput', 'tanggalDisplay', 'bulanDisplay'
         ));
     }
 

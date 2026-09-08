@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @push('custom-css-files')
+<link rel="stylesheet" href="{{ asset('css/jquery-ui.min.css') }}">
 <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
 <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
 <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
@@ -8,10 +9,35 @@
 <div class="container-fluid">
     <h2 class="mb-3">{{ $title }}</h2>
 
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" action="{{ route('home') }}" class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Filter Tanggal (Harian)</label>
+                            <input type="text" name="tanggal" id="filterTanggal" class="form-control" value="{{ $tanggalInput }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Filter Bulan (Bulanan & Tahunan)</label>
+                            <input type="month" name="bulan" id="filterBulan" class="form-control" value="{{ $bulanInput }}">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-filter"></i> Filter</button>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{{ route('home') }}" class="btn btn-secondary btn-block"><i class="fas fa-redo"></i> Reset</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-lg-6">
             <div class="card card-success">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-day"></i> Report Harian - {{ date('d-m-Y') }}</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-day"></i> Report Harian - {{ $tanggalDisplay }}</h3></div>
                 <div class="card-body p-0">
                     <table class="table table-striped table-bordered mb-0">
                         <thead><tr><th>No</th><th>Nama Penghimpun</th><th class="text-center">Jumlah Nasabah</th><th class="text-right">Nominal</th></tr></thead>
@@ -30,7 +56,7 @@
         </div>
         <div class="col-lg-6">
             <div class="card card-info">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-alt"></i> Report Bulanan - {{ date('F Y') }}</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-alt"></i> Report Bulanan - {{ $bulanDisplay }}</h3></div>
                 <div class="card-body p-0">
                     <table class="table table-striped table-bordered mb-0">
                         <thead><tr><th>No</th><th>Nama Penghimpun</th><th class="text-center">Jumlah Nasabah</th><th class="text-right">Nominal</th></tr></thead>
@@ -53,7 +79,7 @@
     <div class="row mt-3">
         <div class="col-lg-6">
             <div class="card card-primary">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-day"></i> Report Supervisor Harian - {{ date('d-m-Y') }}</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-day"></i> Report Supervisor Harian - {{ $tanggalDisplay }}</h3></div>
                 <div class="card-body p-0">
                     <table class="table table-striped table-bordered mb-0">
                         <thead><tr><th>No</th><th>Nama Supervisor</th><th class="text-center">Jumlah Nasabah</th><th class="text-right">Nominal</th></tr></thead>
@@ -72,7 +98,7 @@
         </div>
         <div class="col-lg-6">
             <div class="card card-warning">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-alt"></i> Report Supervisor Bulanan - {{ date('F Y') }}</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-alt"></i> Report Supervisor Bulanan - {{ $bulanDisplay }}</h3></div>
                 <div class="card-body p-0">
                     <table class="table table-striped table-bordered mb-0">
                         <thead><tr><th>No</th><th>Nama Supervisor</th><th class="text-center">Jumlah Nasabah</th><th class="text-right">Nominal</th></tr></thead>
@@ -94,7 +120,7 @@
     <div class="row mt-3">
         <div class="col-12">
             <div class="card card-danger">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-bar"></i> Report Tahunan per Supervisor - {{ $currentYear }}</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-bar"></i> Report Tahunan per Supervisor - {{ $selectedYear }}</h3></div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered table-sm mb-0">
@@ -146,8 +172,10 @@
 @push('custom-js-files')
 <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('js/jquery-ui.min.js') }}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
+    $("#filterTanggal").datepicker({ dateFormat: 'dd-mm-yy' });
     // Line chart dihilangkan
 });
 </script>

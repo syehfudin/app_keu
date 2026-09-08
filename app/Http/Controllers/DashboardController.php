@@ -28,15 +28,14 @@ class DashboardController extends Controller
         $isAdminOrManager = in_array($role, ['admin', 'manager']);
 
         $tanggalInput = $request->input('tanggal', date('d-m-Y'));
-        $bulanInput = $request->input('bulan', date('Y-m'));
 
         $tanggal = date('Y-m-d', strtotime($tanggalInput));
         $tanggalDisplay = date('d-m-Y', strtotime($tanggal));
 
-        $bulanParts = explode('-', $bulanInput);
-        $selectedYear = $bulanParts[0] ?? date('Y');
-        $selectedMonth = $bulanParts[1] ?? date('m');
-        $bulanDisplay = date('F Y', mktime(0, 0, 0, $selectedMonth, 1, $selectedYear));
+        // Bulan & tahun diambil dari tanggal yang dipilih
+        $selectedYear = date('Y', strtotime($tanggal));
+        $selectedMonth = date('n', strtotime($tanggal));
+        $bulanDisplay = date('F Y', strtotime($tanggal));
 
         $accessibleIds = $this->getAccessiblePegawaiIds();
 
@@ -60,7 +59,7 @@ class DashboardController extends Controller
             'dailyPenghimpun', 'monthlyPenghimpun',
             'dailySupervisor', 'monthlySupervisor',
             'yearlySupervisor', 'selectedYear',
-            'tanggalInput', 'bulanInput', 'tanggalDisplay', 'bulanDisplay'
+            'tanggalInput', 'tanggalDisplay', 'bulanDisplay'
         ));
     }
 

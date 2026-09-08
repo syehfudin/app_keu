@@ -18,10 +18,6 @@
                             <label class="form-label fw-bold">Filter Tanggal (Harian)</label>
                             <input type="text" name="tanggal" id="filterTanggal" class="form-control" value="{{ $tanggalInput }}">
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold">Filter Bulan (Bulanan & Tahunan)</label>
-                            <input type="month" name="bulan" id="filterBulan" class="form-control" value="{{ $bulanInput }}">
-                        </div>
                         <div class="col-md-2">
                             <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-filter"></i> Filter</button>
                         </div>
@@ -175,7 +171,7 @@
 <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    $("#filterTanggal").datepicker({ dateFormat: 'dd-mm-yy' });
+    $("#filterTanggal").datepicker({ dateFormat: 'dd-mm-yy', onSelect: function() { this.form.submit(); } });
     // Line chart dihilangkan
 });
 </script>

@@ -144,6 +144,7 @@ class DashboardController extends Controller
             $ph->jumlah_transaksi = $t->jumlah_transaksi ?? 0;
             $ph->total_nominal = $t->total_nominal ?? 0;
             $ph->jumlah_nasabah = $nasabahData->get($ph->id)->jumlah ?? 0;
+            $ph->jumlah_nasabah_terdaftar = $nasabahData->get($ph->id)->jumlah ?? 0;
         }
 
         return $allPenghimpun;
@@ -162,7 +163,7 @@ class DashboardController extends Controller
                     ->join('model_has_roles as mhr', 'u.id', '=', 'mhr.model_id')
                     ->join('roles as r', 'r.id', '=', 'mhr.role_id')
                     ->whereColumn('u.pegawai_id', 'pegawai.id')
-                    ->whereIn(DB::raw('lower(r.name)'), ['supervisor', 'manager']);
+                    ->where(DB::raw('lower(r.name)'), 'supervisor');
             })
             ->groupBy('pegawai.id', 'pegawai.nama')
             ->orderBy('pegawai.nama')
@@ -205,6 +206,7 @@ class DashboardController extends Controller
             $sup->jumlah_transaksi = 0;
             $sup->total_nominal = 0;
             $sup->jumlah_nasabah = 0;
+            $sup->jumlah_nasabah_terdaftar = 0;
 
             foreach ($bawahanIds as $bid) {
                 $t = $transaksiData->get($bid);
@@ -215,6 +217,7 @@ class DashboardController extends Controller
                 $n = $nasabahData->get($bid);
                 if ($n) {
                     $sup->jumlah_nasabah += $n->jumlah;
+                    $sup->jumlah_nasabah_terdaftar += $n->jumlah;
                 }
             }
         }
@@ -241,7 +244,7 @@ class DashboardController extends Controller
                     ->join('model_has_roles as mhr', 'u.id', '=', 'mhr.model_id')
                     ->join('roles as r', 'r.id', '=', 'mhr.role_id')
                     ->whereColumn('u.pegawai_id', 'pegawai.id')
-                    ->whereIn(DB::raw('lower(r.name)'), ['supervisor', 'manager']);
+                    ->where(DB::raw('lower(r.name)'), 'supervisor');
             })
             ->groupBy('pegawai.id', 'pegawai.nama')
             ->orderBy('pegawai.nama')

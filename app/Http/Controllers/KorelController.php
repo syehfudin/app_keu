@@ -80,7 +80,7 @@ class KorelController extends Controller
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
             ->leftJoin('korel as k', 'k.bawahan_id', 'p.id')
-            ->where(DB::raw('lower(r.name)'), 'relawan')
+            ->where(DB::raw('lower(r.name)'), 'penghimpun')
             ->whereNull('k.bawahan_id')
             ->select([
                 'p.id',
@@ -160,7 +160,7 @@ class KorelController extends Controller
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
             ->leftJoin('korel as k', 'k.bawahan_id', 'p.id')
-            ->where(DB::raw('lower(r.name)'), 'relawan')
+            ->where(DB::raw('lower(r.name)'), 'penghimpun')
             ->whereNull('k.bawahan_id')
             ->union($first)
             ->select([
@@ -207,7 +207,7 @@ class KorelController extends Controller
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
             ->leftJoin('korel as k', 'k.bawahan_id', 'p.id')
-            ->where(DB::raw('lower(r.name)'), 'relawan')
+            ->where(DB::raw('lower(r.name)'), 'penghimpun')
             ->whereNull('k.bawahan_id')
             ->union($first)
             ->select([

@@ -6,9 +6,19 @@
 <div class="container-fluid">
     <h2 class="mb-3">{{ $title }}</h2>
     <style>
-        .table-freeze th:nth-child(1),.table-freeze td:nth-child(1){position:sticky;left:0;background:#f8f9fa;z-index:3;}
-        .table-freeze th:nth-child(2),.table-freeze td:nth-child(2){position:sticky;left:50px;background:#f8f9fa;z-index:2;border-right:2px solid #dee2e6;}
-        .table-freeze th:nth-child(3),.table-freeze td:nth-child(3){position:sticky;left:180px;background:#f8f9fa;z-index:2;border-right:2px solid #dee2e6;}
+        .table-freeze-wrapper{max-height:500px;overflow:auto;}
+        .table-freeze{margin:0;}
+        .table-freeze th,.table-freeze td{white-space:nowrap;font-size:12px;}
+        .table-freeze th:nth-child(1),.table-freeze td:nth-child(1){position:sticky;left:0;min-width:40px;background:#f8f9fa;z-index:3;}
+        .table-freeze th:nth-child(2),.table-freeze td:nth-child(2){position:sticky;left:40px;min-width:140px;background:#f8f9fa;z-index:2;border-right:2px solid #dee2e6;}
+        .table-freeze th:nth-child(3),.table-freeze td:nth-child(3){position:sticky;left:180px;min-width:100px;background:#f8f9fa;z-index:2;border-right:2px solid #dee2e6;}
+        .table-freeze thead th{position:sticky;top:0;background:#f8f9fa;z-index:4;}
+        .table-freeze thead tr:first-child th:nth-child(1),
+        .table-freeze thead tr:first-child th:nth-child(2),
+        .table-freeze thead tr:first-child th:nth-child(3){z-index:5;}
+        .table-freeze thead tr:nth-child(2) th:nth-child(1),
+        .table-freeze thead tr:nth-child(2) th:nth-child(2),
+        .table-freeze thead tr:nth-child(2) th:nth-child(3){z-index:5;}
     </style>
 
     <div class="row mb-3">
@@ -126,8 +136,8 @@
             <div class="card card-success">
                 <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-bar"></i> Report Tahunan per Penghimpun - {{ $selectedYear }}</h3><div class="card-tools"><button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button></div></div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-sm mb-0 table-freeze">
+                    <div class="table-freeze-wrapper">
+                        <table class="table table-striped table-bordered table-sm table-freeze">
                             <thead>
                                 <tr>
                                     <th rowspan="2">No</th>
@@ -167,8 +177,8 @@
             <div class="card card-danger">
                 <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-bar"></i> Report Tahunan per Supervisor - {{ $selectedYear }}</h3><div class="card-tools"><button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button></div></div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-sm mb-0 table-freeze">
+                    <div class="table-freeze-wrapper">
+                        <table class="table table-striped table-bordered table-sm table-freeze">
                             <thead>
                                 <tr>
                                     <th rowspan="2">No</th>

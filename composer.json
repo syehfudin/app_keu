@@ -16,6 +16,7 @@
         "laravel/ui": "^4.2",
         "laravelcollective/html": "^6.3",
         "mpdf/mpdf": "^8.2",
+        "phpoffice/phpspreadsheet": "^5.9",
         "revolution/laravel-google-sheets": "^6.2",
         "spatie/laravel-permission": "^5.7",
         "yajra/laravel-datatables": "^9.0",

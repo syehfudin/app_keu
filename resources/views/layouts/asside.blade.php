@@ -61,6 +61,14 @@
                         </a>
                     </li>
                 @endcan
+                @can('import-list')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('import.index') }}">
+                            <i class="align-middle" data-feather="upload"></i>
+                            <p>Import Data</p>
+                        </a>
+                    </li>
+                @endcan
                 @can('tunai-list')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('tunai.index') }}">

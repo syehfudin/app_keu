@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DonaturController;
 use App\Http\Controllers\KorelController;
 use App\Http\Controllers\ListTunaiController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PekerjaanController;
 use App\Http\Controllers\ProductController;
@@ -133,6 +134,14 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/update/{id}', [KorelController::class, 'update'])->name('korel.update');
         Route::delete('/{id}', [KorelController::class, 'destroy'])->name('korel.destroy');
         Route::get('/index_data', [KorelController::class, 'indexData'])->name('korel.index_data');
+    });
+
+    Route::prefix('import')->group(function () {
+        Route::get('/', [ImportController::class, 'index'])->name('import.index');
+        Route::get('/template/penghimpun', [ImportController::class, 'templatePenghimpun'])->name('import.template.penghimpun');
+        Route::get('/template/nasabah', [ImportController::class, 'templateNasabah'])->name('import.template.nasabah');
+        Route::post('/penghimpun', [ImportController::class, 'importPenghimpun'])->name('import.penghimpun');
+        Route::post('/nasabah', [ImportController::class, 'importNasabah'])->name('import.nasabah');
     });
 
     Route::prefix('tunai')->group(function () {

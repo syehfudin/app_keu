@@ -110,7 +110,7 @@ class GoogleSheetService
             if ($jenis_pembayaran == 'cash') {
                 $list[] = 'Titip di Penghimpun';
             } else {
-                $list[] = 'Transfer ke Rek ULAMA';
+                $list[] = 'Setoran Transfer';
             }
             $data[] = $list;
         }
@@ -150,7 +150,7 @@ class GoogleSheetService
         if ($jenis_pembayaran == 'cash') {
             $list[] = 'Titip di Penghimpun';
         } else {
-            $list[] = 'Transfer ke Rek ULAMA';
+            $list[] = 'Setoran Transfer';
         }
         // dd($list);
         $data[] = $list;

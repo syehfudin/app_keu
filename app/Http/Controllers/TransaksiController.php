@@ -60,7 +60,7 @@ class TransaksiController extends Controller
                 'd.nama as nama_donatur',
                 DB::raw('sum(td.nominal_donasi) as total_donasi'),
                 'transaksi.id',
-                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Transfer ke Rek ULAMA' else 'Titip di Penghimpun' end as jenis_transaksi"),
+                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Setoran Transfer' else 'Titip di Penghimpun' end as jenis_transaksi"),
                 'transaksi.keterangan',
             ])
             ->groupBy([
@@ -68,7 +68,7 @@ class TransaksiController extends Controller
                 'transaksi.tanggal',
                 'p.nama',
                 'd.nama',
-                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Transfer ke Rek ULAMA' else 'Titip di Penghimpun' end"),
+                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Setoran Transfer' else 'Titip di Penghimpun' end"),
                 'transaksi.keterangan',
             ]);
         if (in_array($role, ['admin', 'manager'])) {
@@ -465,7 +465,7 @@ class TransaksiController extends Controller
                 'program.nama as nama_program', // Include program name in the select statement
                 DB::raw('sum(td.nominal_donasi) as total_donasi'),
                 'transaksi.id',
-                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Transfer ke Rek ULAMA' else 'Titip di Penghimpun' end as jenis_transaksi"),
+                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Setoran Transfer' else 'Titip di Penghimpun' end as jenis_transaksi"),
                 'transaksi.keterangan',
             ])
             ->where('transaksi.id', $id)
@@ -475,7 +475,7 @@ class TransaksiController extends Controller
                 'p.nama',
                 'd.nama',
                 'program.nama', // Include program name in the group by statement
-                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Transfer ke Rek ULAMA' else 'Titip di Penghimpun' end"),
+                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Setoran Transfer' else 'Titip di Penghimpun' end"),
                 'transaksi.keterangan',
             ])
             ->first(); // Menggunakan first() karena hanya mengambil satu transaksi

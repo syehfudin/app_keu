@@ -144,7 +144,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">Jenis Transaksi</label>
-                            {!! Form::select('jenis_transaksi', array('cash' => 'Titip di Penghimpun', 'transfer' => 'Transfer ke Rek ULAMA'), [], array('class' => 'form-control jt')) !!}
+                            {!! Form::select('jenis_transaksi', array('cash' => 'Titip di Penghimpun', 'transfer' => 'Setoran Transfer'), [], array('class' => 'form-control jt')) !!}
                         </div>
                         <div class="mb-3 upload">
                             <label class="fs-6 fw-bold mb-2">Upload File Bukti Transfer</label>

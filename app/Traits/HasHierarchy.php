@@ -26,4 +26,10 @@ trait HasHierarchy
 
         return [$pegawai_id];
     }
+
+    protected function isPenghimpun()
+    {
+        $role = strtolower(Auth::user()->roles[0]->name);
+        return in_array($role, ['penghimpun', 'supervisor']);
+    }
 }

@@ -69,7 +69,7 @@ class KorelController extends Controller
         $kepala = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->where(DB::raw('lower(r.name)'), 'supervisor')
+            ->whereIn(DB::raw('lower(r.name)'), ['supervisor', 'manager'])
             ->select([
                 'p.id',
                 'p.nama',
@@ -141,7 +141,7 @@ class KorelController extends Controller
         $kepala = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->where(DB::raw('lower(r.name)'), 'supervisor')
+            ->whereIn(DB::raw('lower(r.name)'), ['supervisor', 'manager'])
             ->select([
                 'p.id',
                 'p.nama',
@@ -188,7 +188,7 @@ class KorelController extends Controller
         $kepala = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->where(DB::raw('lower(r.name)'), 'supervisor')
+            ->whereIn(DB::raw('lower(r.name)'), ['supervisor', 'manager'])
             ->select([
                 'p.id',
                 'p.nama',

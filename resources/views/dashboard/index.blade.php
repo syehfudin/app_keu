@@ -8,6 +8,30 @@
 @section('content')
 <div class="container-fluid">
     <h2 class="mb-3">{{ $title }}</h2>
+    <style>
+        .table-freeze-nasabah th:nth-child(3),
+        .table-freeze-nasabah td:nth-child(3) {
+            position: sticky;
+            left: 0;
+            background: #f8f9fa;
+            z-index: 2;
+            border-right: 2px solid #dee2e6;
+        }
+        .table-freeze-nasabah th:nth-child(1),
+        .table-freeze-nasabah td:nth-child(1) {
+            position: sticky;
+            left: 0;
+            background: #f8f9fa;
+            z-index: 3;
+        }
+        .table-freeze-nasabun th:nth-child(2),
+        .table-freeze-nasabah td:nth-child(2) {
+            position: sticky;
+            left: 50px;
+            background: #f8f9fa;
+            z-index: 2;
+        }
+    </style>
 
     <div class="row mb-3">
         <div class="col-12">
@@ -33,7 +57,7 @@
     <div class="row">
         <div class="col-lg-6">
             <div class="card card-success">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-day"></i> Report Harian - {{ $tanggalDisplay }}</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-day"></i> Report Harian - {{ $tanggalDisplay }}</h3><div class="card-tools"><button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button></div></div>
                 <div class="card-body p-0">
                     <table class="table table-striped table-bordered mb-0">
                         <thead><tr><th>No</th><th>Nama Penghimpun</th><th class="text-center">Jumlah Nasabah</th><th class="text-right">Nominal</th></tr></thead>
@@ -52,7 +76,7 @@
         </div>
         <div class="col-lg-6">
             <div class="card card-info">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-alt"></i> Report Bulanan - {{ $bulanDisplay }}</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-alt"></i> Report Bulanan - {{ $bulanDisplay }}</h3><div class="card-tools"><button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button></div></div>
                 <div class="card-body p-0">
                     <table class="table table-striped table-bordered mb-0">
                         <thead><tr><th>No</th><th>Nama Penghimpun</th><th class="text-center">Jumlah Nasabah</th><th class="text-right">Nominal</th></tr></thead>
@@ -75,7 +99,7 @@
     <div class="row mt-3">
         <div class="col-lg-6">
             <div class="card card-primary">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-day"></i> Report Supervisor Harian - {{ $tanggalDisplay }}</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-day"></i> Report Supervisor Harian - {{ $tanggalDisplay }}</h3><div class="card-tools"><button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button></div></div>
                 <div class="card-body p-0">
                     <table class="table table-striped table-bordered mb-0">
                         <thead><tr><th>No</th><th>Nama Supervisor</th><th class="text-center">Jumlah Nasabah</th><th class="text-right">Nominal</th></tr></thead>
@@ -94,7 +118,7 @@
         </div>
         <div class="col-lg-6">
             <div class="card card-warning">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-alt"></i> Report Supervisor Bulanan - {{ $bulanDisplay }}</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-calendar-alt"></i> Report Supervisor Bulanan - {{ $bulanDisplay }}</h3><div class="card-tools"><button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button></div></div>
                 <div class="card-body p-0">
                     <table class="table table-striped table-bordered mb-0">
                         <thead><tr><th>No</th><th>Nama Supervisor</th><th class="text-center">Jumlah Nasabah</th><th class="text-right">Nominal</th></tr></thead>
@@ -117,10 +141,10 @@
     <div class="row mt-3">
         <div class="col-12">
             <div class="card card-success">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-bar"></i> Report Tahunan per Penghimpun - {{ $selectedYear }}</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-bar"></i> Report Tahunan per Penghimpun - {{ $selectedYear }}</h3><div class="card-tools"><button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button></div></div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-sm mb-0">
+                        <table class="table table-striped table-bordered table-sm mb-0 table-freeze-nasabah">
                             <thead>
                                 <tr>
                                     <th rowspan="2">No</th>
@@ -156,10 +180,10 @@
     <div class="row mt-3">
         <div class="col-12">
             <div class="card card-danger">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-bar"></i> Report Tahunan per Supervisor - {{ $selectedYear }}</h3></div>
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-bar"></i> Report Tahunan per Supervisor - {{ $selectedYear }}</h3><div class="card-tools"><button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button></div></div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-sm mb-0">
+                        <table class="table table-striped table-bordered table-sm mb-0 table-freeze-nasabah">
                             <thead>
                                 <tr>
                                     <th rowspan="2">No</th>

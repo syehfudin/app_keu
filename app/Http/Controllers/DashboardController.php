@@ -133,9 +133,21 @@ class DashboardController extends Controller
             ->get()
             ->keyBy('pegawai_id');
 
-        // Get nasabah count per penghimpun
-        $nasabahData = Donatur::select('pegawai_id', DB::raw('COUNT(*) as jumlah'))
+        // Get total nasabah terdaftar per penghimpun (all time)
+        $nasabahTerdaftarData = Donatur::select('pegawai_id', DB::raw('COUNT(*) as jumlah'))
             ->groupBy('pegawai_id')
+            ->get()
+            ->keyBy('pegawai_id');
+
+        // Get nasabah tunai per penghimpun in this month
+        $nasabahTunaiData = Transaksi::select([
+                'transaksi.pegawai_id',
+                DB::raw('COUNT(DISTINCT transaksi.donatur_id) as jumlah_nasabah_tunai'),
+            ])
+            ->whereIn('transaksi.jenis_transaksi', ['cash', 'transfer'])
+            ->whereMonth('transaksi.tanggal', date('n', strtotime($date . '-01')))
+            ->whereYear('transaksi.tanggal', date('Y', strtotime($date . '-01')))
+            ->groupBy('transaksi.pegawai_id')
             ->get()
             ->keyBy('pegawai_id');
 
@@ -143,8 +155,8 @@ class DashboardController extends Controller
             $t = $transaksiData->get($ph->id);
             $ph->jumlah_transaksi = $t->jumlah_transaksi ?? 0;
             $ph->total_nominal = $t->total_nominal ?? 0;
-            $ph->jumlah_nasabah = $nasabahData->get($ph->id)->jumlah ?? 0;
-            $ph->jumlah_nasabah_terdaftar = $nasabahData->get($ph->id)->jumlah ?? 0;
+            $ph->jumlah_nasabah = $nasabahTunaiData->get($ph->id)->jumlah_nasabah_tunai ?? 0;
+            $ph->jumlah_nasabah_terdaftar = $nasabahTerdaftarData->get($ph->id)->jumlah ?? 0;
         }
 
         return $allPenghimpun;
@@ -194,9 +206,27 @@ class DashboardController extends Controller
 
         $transaksiData = $transaksiQuery->groupBy('transaksi.pegawai_id')->get()->keyBy('pegawai_id');
 
-        // Get nasabah count per pegawai
-        $nasabahData = Donatur::select('pegawai_id', DB::raw('COUNT(*) as jumlah'))
+        // Get total nasabah terdaftar per pegawai (all time, no period filter)
+        $nasabahTerdaftarData = Donatur::select('pegawai_id', DB::raw('COUNT(*) as jumlah'))
             ->groupBy('pegawai_id')
+            ->get()
+            ->keyBy('pegawai_id');
+
+        // Get nasabah tunai per pegawai in the period (distinct nasabah with transaksi)
+        $nasabahTunaiQuery = Transaksi::select([
+                'transaksi.pegawai_id',
+                DB::raw('COUNT(DISTINCT transaksi.donatur_id) as jumlah_nasabah_tunai'),
+            ])
+            ->whereIn('transaksi.jenis_transaksi', ['cash', 'transfer']);
+
+        if ($type == 'daily') {
+            $nasabahTunaiQuery->where('transaksi.tanggal', $date);
+        } elseif ($type == 'monthly') {
+            $nasabahTunaiQuery->whereMonth('transaksi.tanggal', date('n', strtotime($date . '-01')))
+                           ->whereYear('transaksi.tanggal', date('Y', strtotime($date . '-01')));
+        }
+
+        $nasabahTunaiData = $nasabahTunaiQuery->groupBy('transaksi.pegawai_id')
             ->get()
             ->keyBy('pegawai_id');
 
@@ -214,10 +244,15 @@ class DashboardController extends Controller
                     $sup->jumlah_transaksi += $t->jumlah_transaksi;
                     $sup->total_nominal += $t->total_nominal;
                 }
-                $n = $nasabahData->get($bid);
-                if ($n) {
-                    $sup->jumlah_nasabah += $n->jumlah;
-                    $sup->jumlah_nasabah_terdaftar += $n->jumlah;
+                // Nasabah terdaftar = all nasabah under this pegawai (no period filter)
+                $nt = $nasabahTerdaftarData->get($bid);
+                if ($nt) {
+                    $sup->jumlah_nasabah_terdaftar += $nt->jumlah;
+                }
+                // Nasabah tunai = nasabah with transaksi in this period
+                $ntunai = $nasabahTunaiData->get($bid);
+                if ($ntunai) {
+                    $sup->jumlah_nasabah += $ntunai->jumlah_nasabah_tunai;
                 }
             }
         }

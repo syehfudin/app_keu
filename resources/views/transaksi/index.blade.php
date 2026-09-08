@@ -20,8 +20,8 @@
                             <tr align="center">
                                 <th>No</th>
                                 <th>Tanggal</th>
-                                <th>Nama Relawan</th>
-                                <th>Nama Donatur</th>
+                                <th>Nama Penghimpun</th>
+                                <th>Nama Nasabah</th>
                                 <th>Jenis Pembayaran</th>
                                 <th>Keterangan</th>
                                 <th>Total Donasi</th>

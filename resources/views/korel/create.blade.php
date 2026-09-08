@@ -16,7 +16,7 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">
-                                <span class="required">Koordinator Relawan</span>
+                                <span class="required">Koordinator Penghimpun</span>
                             </label>
                             <select class="form-control select2" name="kepala" {{ @$id ? 'disabled' : '' }}>
                                 <option value=""></option>
@@ -27,7 +27,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">
-                                <span class="required">List Relawan</span>
+                                <span class="required">List Penghimpun</span>
                             </label>
                             <select class="form-control select2" multiple name="bawahan[]" {{ @$show }}>
                                 @foreach($bawahan as $item)

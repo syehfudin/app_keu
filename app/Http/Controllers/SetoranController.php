@@ -133,7 +133,7 @@ class SetoranController extends Controller
         $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->where('r.name', 'Relawan')
+            ->where('r.name', 'Penghimpun')
             ->select([
                 'p.id',
                 'p.nama',
@@ -242,7 +242,7 @@ class SetoranController extends Controller
         $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->where('r.name', 'Relawan')
+            ->where('r.name', 'Penghimpun')
             ->select([
                 'p.id',
                 'p.nama',
@@ -290,7 +290,7 @@ class SetoranController extends Controller
         $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->where('r.name', 'Relawan')
+            ->where('r.name', 'Penghimpun')
             ->select([
                 'p.id',
                 'p.nama',
@@ -321,7 +321,7 @@ class SetoranController extends Controller
             ],
             [
                 'nama.required' => 'Nama setoran wajib diisi',
-                'pegawai_id.required' => 'Nama Relawan wajib dipilih',
+                'pegawai_id.required' => 'Nama Penghimpun wajib dipilih',
             ]
         );
 

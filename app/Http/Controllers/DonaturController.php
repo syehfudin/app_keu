@@ -22,7 +22,7 @@ class DonaturController extends Controller
         $this->middleware('permission:donatur-create', ['only' => ['create', 'store']]);
         $this->middleware('permission:donatur-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:donatur-delete', ['only' => ['destroy']]);
-        $this->title = 'Data Donatur';
+        $this->title = 'Data Nasabah';
         $this->redirectUrl = route('donatur.index');
     }
 
@@ -95,7 +95,7 @@ class DonaturController extends Controller
         $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->where('r.name', 'Relawan')
+            ->where('r.name', 'Penghimpun')
             ->select([
                 'p.id',
                 'p.nama',
@@ -118,7 +118,7 @@ class DonaturController extends Controller
             'pegawai_id' => 'required',
         ], [
             'nama.required' => 'Nama donatur wajib diisi',
-            'pegawai_id.required' => 'Nama Relawan wajib dipilih',
+            'pegawai_id.required' => 'Nama Penghimpun wajib dipilih',
         ]
         );
 
@@ -151,7 +151,7 @@ class DonaturController extends Controller
         $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->where('r.name', 'Relawan')
+            ->where('r.name', 'Penghimpun')
             ->select([
                 'p.id',
                 'p.nama',
@@ -178,7 +178,7 @@ class DonaturController extends Controller
         $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->where('r.name', 'Relawan')
+            ->where('r.name', 'Penghimpun')
             ->select([
                 'p.id',
                 'p.nama',
@@ -202,7 +202,7 @@ class DonaturController extends Controller
             'pegawai_id' => 'required',
         ], [
             'nama.required' => 'Nama donatur wajib diisi',
-            'pegawai_id.required' => 'Nama Relawan wajib dipilih',
+            'pegawai_id.required' => 'Nama Penghimpun wajib dipilih',
         ]
         );
 

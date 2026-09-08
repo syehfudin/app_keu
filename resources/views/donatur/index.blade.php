@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <div class="d-flex align-items-center py-2 py-md-2">
         @can('donatur-create')
-        <a class="btn btn-success" href="{{ route('donatur.create') }}"> Tambah Donatur</a>
+        <a class="btn btn-success" href="{{ route('donatur.create') }}"> Tambah Nasabah</a>
         @endcan
     </div>
     <div class="row">
@@ -19,8 +19,8 @@
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Nama Relawan</th>
-                                <th>Nama Donatur</th>
+                                <th>Nama Penghimpun</th>
+                                <th>Nama Nasabah</th>
                                 <th>No Telp</th>
                                 <th>Pekerjaan</th>
                                 <th width="280px">Action</th>

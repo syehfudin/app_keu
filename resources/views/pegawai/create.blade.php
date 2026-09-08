@@ -11,17 +11,17 @@
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
-                                <label class="fs-6 fw-bold mb-2">ID Relawan</label>
+                                <label class="fs-6 fw-bold mb-2">ID Penghimpun</label>
                                 {!! Form::text('nip', @$user->pegawai->nip, [
-                                    'placeholder' => 'Masukan id relawan',
+                                    'placeholder' => 'Masukan id penghimpun',
                                     'class' => 'form-control',
                                     @$show,
                                 ]) !!}
                             </div>
                             <div class="mb-3">
-                                <label class="fs-6 fw-bold mb-2">Nama Relawan</label>
+                                <label class="fs-6 fw-bold mb-2">Nama Penghimpun</label>
                                 {!! Form::text('nama', @$user->pegawai->nama, [
-                                    'placeholder' => 'Masukan nama relawan',
+                                    'placeholder' => 'Masukan nama penghimpun',
                                     'class' => 'form-control',
                                     @$show,
                                 ]) !!}
@@ -29,7 +29,7 @@
                             <div class="mb-3">
                                 <label class="fs-6 fw-bold mb-2">Alamat</label>
                                 {!! Form::textarea('alamat', @$user->pegawai->alamat, [
-                                    'placeholder' => 'Masukan alamat relawan',
+                                    'placeholder' => 'Masukan alamat penghimpun',
                                     'class' => 'form-control',
                                     'rows' => '4',
                                     @$show,

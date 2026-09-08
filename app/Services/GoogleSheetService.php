@@ -6,11 +6,47 @@ use App\Models\Program;
 use App\Models\Setoran;
 use App\Models\SetoranDetail;
 use App\Models\Transaksi;
+use App\Models\TransaksiDetail;
 use DB;
 use Sheets;
 
 class GoogleSheetService
 {
+    /**
+     * Get programs ordered by input order (transaksi_detail min id),
+     * programs with donations first, programs with 0/no donation last.
+     */
+    protected function getOrderedPrograms()
+    {
+        // Get program order based on first appearance in transaksi_detail (input order)
+        $programOrder = TransaksiDetail::select('program_id', DB::raw('MIN(id) as first_input'))
+            ->groupBy('program_id')
+            ->orderBy('first_input', 'asc')
+            ->pluck('first_input', 'program_id');
+
+        // Get all programs
+        $programs = Program::orderBy('id', 'asc')->get();
+
+        // Sort: programs with donation (in transaksi_detail) first by input order,
+        // then programs without donation (0) last by id
+        $sorted = $programs->sort(function ($a, $b) use ($programOrder) {
+            $aHas = $programOrder->has($a->id);
+            $bHas = $programOrder->has($b->id);
+            if ($aHas && $bHas) {
+                return $programOrder[$a->id] <=> $programOrder[$b->id];
+            }
+            if ($aHas && !$bHas) {
+                return -1;
+            }
+            if (!$aHas && $bHas) {
+                return 1;
+            }
+            return $a->id <=> $b->id;
+        })->values();
+
+        return $sorted;
+    }
+
     public function storeSheet()
     {
         $transaksi = Transaksi::leftJoin('transaksi_detail as td', 'transaksi.id', '=', 'td.transaksi_id')
@@ -38,14 +74,14 @@ class GoogleSheetService
             ->orderBy('transaksi.tanggal', 'asc')
             ->get();
 
-        $program = Program::orderBy('id', 'asc')->get();
+        $program = $this->getOrderedPrograms();
         $data = [];
         $header = [];
         $header[] = 'Tanggal';
-        $header[] = 'Relawan';
-        $header[] = 'Donatur';
-        $header[] = 'Alamat Donatur';
-        $header[] = 'Nomor HP Donatur';
+        $header[] = 'Penghimpun';
+        $header[] = 'Nasabah';
+        $header[] = 'Alamat Nasabah';
+        $header[] = 'Nomor HP Nasabah';
         foreach ($program as $row) {
             $header[] = $row->nama;
         }
@@ -55,7 +91,7 @@ class GoogleSheetService
 
         foreach ($transaksi as $item) {
             $list = [];
-            $list[] = date('m-d-Y', strtotime($item->tanggal));
+            $list[] = date('Y-m-d', strtotime($item->tanggal));
             $list[] = $item->relawan;
             $list[] = $item->donatur;
             $list[] = isset($item->alamat) ? $item->alamat : '';
@@ -72,7 +108,7 @@ class GoogleSheetService
             $list[] = isset($item->keterangan) ? $item->keterangan : '';
             $jenis_pembayaran = $item->jenis_transaksi;
             if ($jenis_pembayaran == 'cash') {
-                $list[] = 'Titip di Relawan';
+                $list[] = 'Titip di Penghimpun';
             } else {
                 $list[] = 'Transfer ke Rek ULAMA';
             }
@@ -98,9 +134,9 @@ class GoogleSheetService
             ->where('transaksi.id', $idTransaksi)
             ->first();
 
-        $program = Program::orderBy('id', 'asc')->get();
+        $program = $this->getOrderedPrograms();
 
-        $list[] = date('m-d-Y', strtotime($transaksi->tanggal));
+        $list[] = date('Y-m-d', strtotime($transaksi->tanggal));
         $list[] = $transaksi->relawan;
         $list[] = $transaksi->donatur;
         $list[] = isset($transaksi->alamat) ? $transaksi->alamat : '';
@@ -112,7 +148,7 @@ class GoogleSheetService
         $list[] = isset($transaksi->keterangan) ? $transaksi->keterangan : '';
         $jenis_pembayaran = $transaksi->jenis_transaksi;
         if ($jenis_pembayaran == 'cash') {
-            $list[] = 'Titip di Relawan';
+            $list[] = 'Titip di Penghimpun';
         } else {
             $list[] = 'Transfer ke Rek ULAMA';
         }
@@ -136,9 +172,9 @@ class GoogleSheetService
             ->get();
         $data = [];
         foreach ($setor as $item) {
-            $header = ['Tanggal', 'Nama Relawan', 'Total Setoran', 'Bukti Setoran'];
+            $header = ['Tanggal', 'Nama Penghimpun', 'Total Setoran', 'Bukti Setoran'];
             $dataSetor = [];
-            $dataSetor[] = date('m-d-Y', strtotime($item->created_at));
+            $dataSetor[] = date('Y-m-d', strtotime($item->created_at));
             $dataSetor[] = $item->relawan;
             $dataSetor[] = $item->total_setoran;
             $dataSetor[] = asset($item->path.$item->nama_file);
@@ -163,7 +199,7 @@ class GoogleSheetService
                 ])->get();
             foreach ($detail as $row) {
                 $detailSetor = [];
-                $detailSetor[] = date('m-d-Y', strtotime($row->tanggal));
+                $detailSetor[] = date('Y-m-d', strtotime($row->tanggal));
                 $detailSetor[] = $item->relawan;
                 $detailSetor[] = $row->donatur;
                 $detailSetor[] = $row->alamat;
@@ -207,19 +243,19 @@ class GoogleSheetService
         $data = [];
         $header = [];
         $header[] = 'Tanggal';
-        $header[] = 'Nama Relawan';
+        $header[] = 'Nama Penghimpun';
         $header[] = 'Total Setoran';
         $header[] = 'Bukti Setoran';
         $data[] = $header;
         $dataSetor = [];
-        $dataSetor[] = date('m-d-Y');
+        $dataSetor[] = date('Y-m-d');
         $dataSetor[] = $setor->relawan;
         $dataSetor[] = $setor->total_setoran;
         $dataSetor[] = asset($setor->path.$setor->nama_file);
         $data[] = $dataSetor;
         foreach ($detail as $item) {
             $detailSetor = [];
-            $detailSetor[] = date('m-d-Y', strtotime($item->tanggal));
+            $detailSetor[] = date('Y-m-d', strtotime($item->tanggal));
             $detailSetor[] = $setor->relawan;
             $detailSetor[] = $item->donatur;
             $detailSetor[] = isset($item->alamat) ? $item->alamat : '';

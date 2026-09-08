@@ -76,7 +76,7 @@ class RehaController extends Controller
             $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
                 ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
                 ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-                ->where('r.name', 'Relawan')
+                ->where('r.name', 'Penghimpun')
                 ->select([
                     'p.id',
                     'p.nama',
@@ -105,13 +105,13 @@ class RehaController extends Controller
             ],
             [
                 'pegawai_id.required' => 'Pegawai wajib diisi',
-                'renku_donatur_lama.required' => 'Renku Donatur Lama wajib diisi',
-                'renku_donatur_baru.required' => 'Renku Donatur Baru wajib diisi',
-                'realisasi_donatur_lama.required' => 'Realisasi Donatur Lama wajib diisi',
-                'realisasi_donatur_baru.required' => 'Realisasi Donatur Baru wajib diisi',
-                'fu_donatur_lama.required' => 'FU Donatur Lama wajib diisi',
-                'deal_donatur_lama.required' => 'Deal Donatur Lama wajib diisi',
-                'deal_donatur_baru.required' => 'Deal Donatur Baru wajib diisi',
+                'renku_donatur_lama.required' => 'Renku Nasabah Lama wajib diisi',
+                'renku_donatur_baru.required' => 'Renku Nasabah Baru wajib diisi',
+                'realisasi_donatur_lama.required' => 'Realisasi Nasabah Lama wajib diisi',
+                'realisasi_donatur_baru.required' => 'Realisasi Nasabah Baru wajib diisi',
+                'fu_donatur_lama.required' => 'FU Nasabah Lama wajib diisi',
+                'deal_donatur_lama.required' => 'Deal Nasabah Lama wajib diisi',
+                'deal_donatur_baru.required' => 'Deal Nasabah Baru wajib diisi',
                 'jenis_akad.required' => 'Jenis Akad wajib diisi',
             ]
         );
@@ -148,7 +148,7 @@ class RehaController extends Controller
         $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->where('r.name', 'Relawan')
+            ->where('r.name', 'Penghimpun')
             ->select([
                 'p.id',
                 'p.nama',
@@ -172,7 +172,7 @@ class RehaController extends Controller
         $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->where('r.name', 'Relawan')
+            ->where('r.name', 'Penghimpun')
             ->select([
                 'p.id',
                 'p.nama',
@@ -204,13 +204,13 @@ class RehaController extends Controller
             ],
             [
                 'pegawai_id.required' => 'Pegawai wajib diisi',
-                'renku_donatur_lama.required' => 'Renku Donatur Lama wajib diisi',
-                'renku_donatur_baru.required' => 'Renku Donatur Baru wajib diisi',
-                'realisasi_donatur_lama.required' => 'Realisasi Donatur Lama wajib diisi',
-                'realisasi_donatur_baru.required' => 'Realisasi Donatur Baru wajib diisi',
-                'fu_donatur_lama.required' => 'FU Donatur Lama wajib diisi',
-                'deal_donatur_lama.required' => 'Deal Donatur Lama wajib diisi',
-                'deal_donatur_baru.required' => 'Deal Donatur Baru wajib diisi',
+                'renku_donatur_lama.required' => 'Renku Nasabah Lama wajib diisi',
+                'renku_donatur_baru.required' => 'Renku Nasabah Baru wajib diisi',
+                'realisasi_donatur_lama.required' => 'Realisasi Nasabah Lama wajib diisi',
+                'realisasi_donatur_baru.required' => 'Realisasi Nasabah Baru wajib diisi',
+                'fu_donatur_lama.required' => 'FU Nasabah Lama wajib diisi',
+                'deal_donatur_lama.required' => 'Deal Nasabah Lama wajib diisi',
+                'deal_donatur_baru.required' => 'Deal Nasabah Baru wajib diisi',
                 'jenis_akad.required' => 'Jenis Akad wajib diisi',
             ]
         );

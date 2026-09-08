@@ -17,21 +17,21 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">
-                                <span class="required">Nama Relawan</span>
+                                <span class="required">Nama Penghimpun</span>
                             </label>
                             <select class="form-control" name="pegawai_id">
-                                <option value="">Pilih Relawan ...</option>
+                                <option value="">Pilih Penghimpun ...</option>
                                 @foreach($relawan as $item)
                                     <option value="{{ $item->id }}" {{ $item->id == @$donatur->pegawai_id ? 'selected' : '' }}>{{ $item->nama }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="fs-6 fw-bold mb-2">Nama Donatur</label>
+                            <label class="fs-6 fw-bold mb-2">Nama Nasabah</label>
                             {!! Form::text('nama', @$donatur->nama, array('placeholder' => 'Masukan nama donatur','class' => 'form-control', @$show)) !!}
                         </div>
                         <div class="mb-3">
-                            <label class="fs-6 fw-bold mb-2">Nomot Hp Donatur</label>
+                            <label class="fs-6 fw-bold mb-2">Nomor HP Nasabah</label>
                             {!! Form::text('no_telepon', @$donatur->no_telepon, array('placeholder' => 'Masukan nomor hp donatur','class' => 'form-control', @$show)) !!}
                         </div>
                         <div class="mb-3">

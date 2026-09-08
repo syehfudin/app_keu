@@ -20,7 +20,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Tanggal</th>
-                                    <th>Nama Relawan</th>
+                                    <th>Nama Penghimpun</th>
                                     {{-- <th>Jenis Akad</th> --}}
                                     <th width="280px">Action</th>
                                 </tr>

@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <div class="d-flex align-items-center py-2 py-md-2">
         @can('korel-create')
-        <a class="btn btn-success" href="{{ route('korel.create') }}"> Tambah Kepala Relawan</a>
+        <a class="btn btn-success" href="{{ route('korel.create') }}"> Tambah Koordinator Penghimpun</a>
         @endcan
     </div>
     <div class="row">
@@ -19,8 +19,8 @@
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Koordinator Relawan</th>
-                                <th>Relawan</th>
+                                <th>Koordinator Penghimpun</th>
+                                <th>Penghimpun</th>
                                 <th width="280px">Action</th>
                             </tr>
                         </thead>

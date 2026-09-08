@@ -16,7 +16,7 @@ class KorelController extends Controller
         $this->middleware('permission:korel-create', ['only' => ['create', 'store']]);
         $this->middleware('permission:korel-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:korel-delete', ['only' => ['destroy']]);
-        $this->title = 'Data Koordinator Relawan';
+        $this->title = 'Data Koordinator Penghimpun';
         $this->redirectUrl = route('korel.index');
     }
 

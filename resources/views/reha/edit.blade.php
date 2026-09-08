@@ -22,10 +22,10 @@
                                     'id' => 'datepicker',
                                 ]) !!}
                             </div>
-                            @if ($role != 'relawan')
+                            @if ($role != 'penghimpun')
                                 <div class="mb-3">
                                     <label class="fs-6 fw-bold mb-2">
-                                        <span class="required">Nama Relawan</span>
+                                        <span class="required">Nama Penghimpun</span>
                                     </label>
                                     <input type="hidden" name="pegawai_id" value="{{ $reha->pegawai_id }}">
                                     <select class="form-control" name="pegawai_id" disabled>
@@ -43,12 +43,12 @@
                                 <label class="fs-6 fw-bold mb-2" style="font-size: 1.5em;">RENCANA KUNJUNGAN</label>
                                 <div class="d-flex align-items-start mt-3">
                                     <div style="flex: 1;">
-                                        <label> Donatur Lama : </label>
+                                        <label> Nasabah Lama : </label>
                                         <input type="number" class="form-control" name="renku_donatur_lama"
                                             {{ @$show }} value="{{ @$reha->renku_donatur_lama ?? 0 }}">
                                     </div>
                                     <div style="flex: 1; margin-left: 10px;">
-                                        <label> Donatur Baru : </label>
+                                        <label> Nasabah Baru : </label>
                                         <input type="number" class="form-control" name="renku_donatur_baru"
                                             {{ @$show }} value="{{ @$reha->renku_donatur_baru ?? 0 }}">
                                     </div>
@@ -58,12 +58,12 @@
                                 <label class="fs-6 fw-bold mb-2" style="font-size: 1.5em;">REALISASI</label>
                                 <div class="d-flex align-items-start mt-3">
                                     <div style="flex: 1;">
-                                        <label> Donatur Lama : </label>
+                                        <label> Nasabah Lama : </label>
                                         <input type="number" class="form-control" name="realisasi_donatur_lama"
                                             {{ @$show }} value="{{ @$reha->realisasi_donatur_lama ?? 0 }}">
                                     </div>
                                     <div style="flex: 1; margin-left: 10px;">
-                                        <label> Donatur Baru : </label>
+                                        <label> Nasabah Baru : </label>
                                         <input type="number" class="form-control" name="realisasi_donatur_baru"
                                             {{ @$show }} value="{{ @$reha->realisasi_donatur_baru ?? 0 }}">
                                     </div>
@@ -73,12 +73,12 @@
                                 <label class="fs-6 fw-bold mb-2" style="font-size: 1.5em;">RENCANA FU</label>
                                 <div class="d-flex align-items-start mt-3">
                                     <div style="flex: 1;">
-                                        <label> Donatur Lama : </label>
+                                        <label> Nasabah Lama : </label>
                                         <input type="number" class="form-control" name="fu_donatur_lama"
                                             {{ @$show }} value="{{ @$reha->fu_donatur_lama ?? 0 }}">
                                     </div>
                                     <div style="flex: 1; margin-left: 10px;">
-                                        <label> Donatur Baru : </label>
+                                        <label> Nasabah Baru : </label>
                                         <input type="number" class="form-control" name="fu_donatur_baru"
                                             {{ @$show }} value="{{ @$reha->fu_donatur_baru ?? 0 }}">
                                     </div>
@@ -88,12 +88,12 @@
                                 <label class="fs-6 fw-bold mb-2" style="font-size: 1.5em;">DEAL HARI INI</label>
                                 <div class="d-flex align-items-start mt-3">
                                     <div style="flex: 1;">
-                                        <label> Donatur Lama : </label>
+                                        <label> Nasabah Lama : </label>
                                         <input type="number" class="form-control" name="deal_donatur_lama"
                                             {{ @$show }} value="{{ @$reha->deal_donatur_lama ?? 0 }}">
                                     </div>
                                     <div style="flex: 1; margin-left: 10px;">
-                                        <label> Donatur Baru : </label>
+                                        <label> Nasabah Baru : </label>
                                         <input type="number" class="form-control" name="deal_donatur_baru"
                                             {{ @$show }} value="{{ @$reha->deal_donatur_baru ?? 0 }}">
                                     </div>
@@ -138,7 +138,7 @@
 @endsection
 
 @push('custom-js-files')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" crossorigin="anonymous"
+    <script src="/plugins/handlebars/handlebars.min.js" crossorigin="anonymous"
         integrity="sha384-dzyupbI5ULkaeg4hBWhkXonQFoXGJvULMzDu6qStcgOkh+6BDdNN9NGGfhmY4ODA"></script>
     <script type="text/javascript">
         $(document).ready(function() {

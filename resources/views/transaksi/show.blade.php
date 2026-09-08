@@ -19,7 +19,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="fs-6 fw-bold mb-2">
-                            <span class="required">Nama Relawan</span>
+                            <span class="required">Nama Penghimpun</span>
                         </label>
                         <select class="form-control" {{ $show }}>
                             @foreach($relawan as $item)
@@ -28,7 +28,7 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="fs-6 fw-bold mb-2">Nama Donatur</label>
+                        <label class="fs-6 fw-bold mb-2">Nama Nasabah</label>
                         <select class="form-control" {{ $show }}>
                             @foreach($donatur as $item)
                                 <option value="{{ $item->id }}" {{ $item->id == $transaksi->donatur_id ? 'selected' : '' }}>{{ $item->nama }}</option>
@@ -49,7 +49,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="fs-6 fw-bold mb-2">Jenis Transaksi</label>
-                        {!! Form::select('jenis_transaksi', array('cash' => 'Titip di Relawan', 'transfer' => 'Transfer ke Rek ULAMA'), $transaksi->jenis_transaksi, array('class' => 'form-control jt', $show)) !!}
+                        {!! Form::select('jenis_transaksi', array('cash' => 'Titip di Penghimpun', 'transfer' => 'Transfer ke Rek ULAMA'), $transaksi->jenis_transaksi, array('class' => 'form-control jt', $show)) !!}
                     </div>
                     @if($transaksi->jenis_transaksi == 'transfer')
                     <div class="mb-3">

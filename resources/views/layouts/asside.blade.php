@@ -34,7 +34,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('pegawai.index') }}">
                             <i class="nav-icon fas fa-user"></i>
-                            <p>Manage Relawan</p>
+                            <p>Manage Penghimpun</p>
                         </a>
                     </li>
                 @endcan
@@ -57,7 +57,15 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('donatur.index') }}">
                             <i class="align-middle" data-feather="sliders"></i>
-                            <p>Manage Donatur</p>
+                            <p>Manage Nasabah</p>
+                        </a>
+                    </li>
+                @endcan
+                @can('tunai-list')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('tunai.index') }}">
+                            <i class="align-middle" data-feather="dollar-sign"></i>
+                            <p>List Tunai</p>
                         </a>
                     </li>
                 @endcan
@@ -89,7 +97,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('korel.index') }}">
                             <i class="align-middle" data-feather="sliders"></i>
-                            <p>Koordinator Relawan</p>
+                            <p>Koordinator Penghimpun</p>
                         </a>
                     </li>
                 @endcan

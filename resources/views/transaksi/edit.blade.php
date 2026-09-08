@@ -25,7 +25,7 @@
                         @if($role != 'relawan')
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">
-                                <span class="required">Nama Relawan</span>
+                                <span class="required">Nama Penghimpun</span>
                             </label>
                             <input type="hidden" name="pegawai_id" value="{{ $transaksi->pegawai_id }}">
                             <select class="form-control" name="pegawai_id" disabled>
@@ -38,9 +38,9 @@
                             {!! Form::hidden('pegawai_id', $pegawai_id) !!}
                         @endif
                         <div class="mb-3">
-                            <label class="fs-6 fw-bold mb-2">Nama Donatur</label>
+                            <label class="fs-6 fw-bold mb-2">Nama Nasabah</label>
                             <select class="form-control select2" name="donatur_id">
-                                <option value="">Pilih Donatur ...</option>
+                                <option value="">Pilih Nasabah ...</option>
                                 @foreach($donatur as $item)
                                     <option value="{{ $item->id }}" {{ $item->id == @$transaksi->donatur_id ? 'selected' : '' }}>{{ $item->nama }}</option>
                                 @endforeach
@@ -73,7 +73,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">Jenis Transaksi</label>
-                            {!! Form::select('jenis_transaksi', array('cash' => 'Titip di Relawan', 'transfer' => 'Transfer ke Rek ULAMA'), [], array('class' => 'form-control jt')) !!}
+                            {!! Form::select('jenis_transaksi', array('cash' => 'Titip di Penghimpun', 'transfer' => 'Transfer ke Rek ULAMA'), [], array('class' => 'form-control jt')) !!}
                         </div>
                         <div class="mb-3 upload">
                             <label class="fs-6 fw-bold mb-2">Upload File Bukti Transfer</label>

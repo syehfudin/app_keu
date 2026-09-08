@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <div class="d-flex align-items-center py-2 py-md-2">
         @can('pegawai-create')
-        <a class="btn btn-success" href="{{ route('pegawai.create') }}"> Tambah Relawan</a>
+        <a class="btn btn-success" href="{{ route('pegawai.create') }}"> Tambah Penghimpun</a>
         @endcan
     </div>
     <div class="row">
@@ -19,7 +19,7 @@
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>ID Relawan</th>
+                                <th>ID Penghimpun</th>
                                 <th>Nama</th>
                                 <th>Username</th>
                                 <th>Role</th>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DonaturController;
 use App\Http\Controllers\KorelController;
+use App\Http\Controllers\ListTunaiController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PekerjaanController;
 use App\Http\Controllers\ProductController;
@@ -132,6 +133,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/update/{id}', [KorelController::class, 'update'])->name('korel.update');
         Route::delete('/{id}', [KorelController::class, 'destroy'])->name('korel.destroy');
         Route::get('/index_data', [KorelController::class, 'indexData'])->name('korel.index_data');
+    });
+
+    Route::prefix('tunai')->group(function () {
+        Route::get('/', [ListTunaiController::class, 'index'])->name('tunai.index');
     });
 
     Route::prefix('reha')->group(function () {

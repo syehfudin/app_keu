@@ -28,7 +28,7 @@
 					<div class="d-table-cell align-middle">
 
 						<div class="text-center mt-4">
-							<h1 class="h2">Laporan Harian Relawan</h1>
+							<h1 class="h2">Laporan Harian Penghimpun</h1>
 							<p class="lead">
 								Silahkan login ke akun anda
 							</p>

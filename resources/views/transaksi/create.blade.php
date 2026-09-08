@@ -22,10 +22,10 @@
                             <label class="fs-6 fw-bold mb-2">Tanggal</label>
                             {!! Form::text('tanggal', @$transaksi->tanggal ? date('d-m-Y',  strtotime(@$transaksi->tanggal)) : date('d-m-Y'), array('class' => 'form-control', 'id' => 'datepicker')) !!}
                         </div>
-                        @if($role != 'relawan')
+                        @if($role != 'penghimpun')
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">
-                                <span class="required">Nama Relawan</span>
+                                <span class="required">Nama Penghimpun</span>
                             </label>
                             <select class="form-control" name="pegawai_id">
                                 @foreach($relawan as $item)
@@ -51,26 +51,35 @@
                         @if(!@$transaksi)
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">
-                                <span class="required">Status Donatur</span>
+                                <span class="required">Status Nasabah</span>
                             </label>
+                            @role('Penghimpun')
+                            <input type="hidden" name="status" value="lama">
+                            <div class="form-check">
+                                <span class="form-check-label">
+                                    Nasabah Lama
+                                </span>
+                            </div>
+                            @else
                             <label class="form-check">
                                 {!! Form::radio('status', 'baru', true, array('class' => 'form-check-input status', @$show)) !!}
                                 <span class="form-check-label">
-                                    Donatur Baru
+                                    Nasabah Baru
                                 </span>
                             </label>
                             <label class="form-check">
                                 {!! Form::radio('status', 'lama', false, array('class' => 'form-check-input status', @$show)) !!}
                                 <span class="form-check-label">
-                                    Donatur Lama
+                                    Nasabah Lama
                                 </span>
                             </label>
+                            @endrole
                         </div>
                         @endif
                         <div class="mb-3 donatur_lama">
-                            <label class="fs-6 fw-bold mb-2">Nama Donatur</label>
+                            <label class="fs-6 fw-bold mb-2">Nama Nasabah</label>
                             <select class="form-control select2" name="donatur_id">
-                                <option value="">Pilih Donatur ...</option>
+                                <option value="">Pilih Nasabah ...</option>
                                 @foreach($donatur as $item)
                                     <option value="{{ $item->id }}" {{ $item->id == @$transaksi->donatur_id ? 'selected' : '' }}>{{ $item->nama }}</option>
                                 @endforeach
@@ -78,11 +87,11 @@
                         </div>
                         <div class="donatur_baru">
                             <div class="mb-3">
-                                <label class="fs-6 fw-bold mb-2">Nama Donatur</label>
+                                <label class="fs-6 fw-bold mb-2">Nama Nasabah</label>
                                 {!! Form::text('nama', null, array('placeholder' => 'Masukan nama donatur','class' => 'form-control', @$show)) !!}
                             </div>
                             <div class="mb-3">
-                                <label class="fs-6 fw-bold mb-2">Nomor HP Donatur</label>
+                                <label class="fs-6 fw-bold mb-2">Nomor HP Nasabah</label>
                                 {!! Form::text('no_telepon', null, array('placeholder' => 'Masukan nomor hp donatur','class' => 'form-control', @$show)) !!}
                             </div>
                             <div class="mb-3">
@@ -135,7 +144,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">Jenis Transaksi</label>
-                            {!! Form::select('jenis_transaksi', array('cash' => 'Titip di Relawan', 'transfer' => 'Transfer ke Rek ULAMA'), [], array('class' => 'form-control jt')) !!}
+                            {!! Form::select('jenis_transaksi', array('cash' => 'Titip di Penghimpun', 'transfer' => 'Transfer ke Rek ULAMA'), [], array('class' => 'form-control jt')) !!}
                         </div>
                         <div class="mb-3 upload">
                             <label class="fs-6 fw-bold mb-2">Upload File Bukti Transfer</label>
@@ -230,7 +239,11 @@
         setDonatur('lama');
         setUpload('{{ @$transaksi->jenis_transaksi }}');
     }else{
+        @role('Penghimpun')
+        setDonatur('lama');
+        @else
         setDonatur('baru');
+        @endrole
         setUpload('cash');
     }
 </script>

@@ -17,7 +17,7 @@
                         <div class="card-body">
                             <div class="mb-3">
                                 <label class="fs-6 fw-bold mb-2">
-                                    <span class="required">Nama Relawan</span>
+                                    <span class="required">Nama Penghimpun</span>
                                 </label>
                                 <select class="form-control" {{ $show }}>
                                     @foreach ($relawan as $item)
@@ -32,12 +32,12 @@
                                     <label class="fs-6 fw-bold mb-2" style="font-size: 1.5em;">RENCANA KUNJUNGAN</label>
                                     <div class="d-flex align-items-start mt-3">
                                         <div style="flex: 1;">
-                                            <label> Donatur Lama : </label>
+                                            <label> Nasabah Lama : </label>
                                             <input type="number" class="form-control" name="renku_donatur_lama[]"
                                                 {{ @$show }} value="{{ @$item->renku_donatur_lama ?? 0 }}">
                                         </div>
                                         <div style="flex: 1; margin-left: 10px;">
-                                            <label> Donatur Baru : </label>
+                                            <label> Nasabah Baru : </label>
                                             <input type="number" class="form-control" name="renku_donatur_baru[]"
                                                 {{ @$show }} value="{{ @$item->renku_donatur_baru ?? 0 }}">
                                         </div>
@@ -47,12 +47,12 @@
                                     <label class="fs-6 fw-bold mb-2" style="font-size: 1.5em;">REALISASI</label>
                                     <div class="d-flex align-items-start mt-3">
                                         <div style="flex: 1;">
-                                            <label> Donatur Lama : </label>
+                                            <label> Nasabah Lama : </label>
                                             <input type="number" class="form-control" name="realisasi_donatur_lama"
                                                 {{ @$show }} value="{{ @$item->realisasi_donatur_lama ?? 0 }}">
                                         </div>
                                         <div style="flex: 1; margin-left: 10px;">
-                                            <label> Donatur Baru : </label>
+                                            <label> Nasabah Baru : </label>
                                             <input type="number" class="form-control" name="realisasi_donatur_baru"
                                                 {{ @$show }} value="{{ @$item->realisasi_donatur_baru ?? 0 }}">
                                         </div>
@@ -62,12 +62,12 @@
                                     <label class="fs-6 fw-bold mb-2" style="font-size: 1.5em;">RENCANA FU</label>
                                     <div class="d-flex align-items-start mt-3">
                                         <div style="flex: 1;">
-                                            <label> Donatur Lama : </label>
+                                            <label> Nasabah Lama : </label>
                                             <input type="number" class="form-control" name="fu_donatur_lama"
                                                 {{ @$show }} value="{{ @$item->fu_donatur_lama ?? 0 }}">
                                         </div>
                                         <div style="flex: 1; margin-left: 10px;">
-                                            <label> Donatur Baru : </label>
+                                            <label> Nasabah Baru : </label>
                                             <input type="number" class="form-control" name="fu_donatur_baru"
                                                 {{ @$show }} value="{{ @$item->fu_donatur_baru ?? 0 }}">
                                         </div>
@@ -77,12 +77,12 @@
                                     <label class="fs-6 fw-bold mb-2" style="font-size: 1.5em;">DEAL HARI INI</label>
                                     <div class="d-flex align-items-start mt-3">
                                         <div style="flex: 1;">
-                                            <label> Donatur Lama : </label>
+                                            <label> Nasabah Lama : </label>
                                             <input type="number" class="form-control" name="deal_donatur_lama"
                                                 {{ @$show }} value="{{ @$item->deal_donatur_lama ?? 0 }}">
                                         </div>
                                         <div style="flex: 1; margin-left: 10px;">
-                                            <label> Donatur Baru : </label>
+                                            <label> Nasabah Baru : </label>
                                             <input type="number" class="form-control" name="deal_donatur_baru"
                                                 {{ @$show }} value="{{ @$item->deal_donatur_baru ?? 0 }}">
                                         </div>

@@ -23,7 +23,7 @@
                 <li class="sidebar-item">
                     <a class="sidebar-link" href="{{ route('pegawai.index') }}">
                         <i class="align-middle" data-feather="sliders"></i>
-                        <span class="align-middle">Manage Relawan</span>
+                        <span class="align-middle">Manage Penghimpun</span>
                     </a>
                 </li>
             @endcan
@@ -47,7 +47,15 @@
                 <li class="sidebar-item">
                     <a class="sidebar-link" href="{{ route('donatur.index') }}">
                         <i class="align-middle" data-feather="sliders"></i>
-                        <span class="align-middle">Manage Donatur</span>
+                        <span class="align-middle">Manage Nasabah</span>
+                    </a>
+                </li>
+            @endcan
+            @can('tunai-list')
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('tunai.index') }}">
+                        <i class="align-middle" data-feather="dollar-sign"></i>
+                        <span class="align-middle">List Tunai</span>
                     </a>
                 </li>
             @endcan
@@ -79,7 +87,7 @@
                 <li class="sidebar-item">
                     <a class="sidebar-link" href="{{ route('korel.index') }}">
                         <i class="align-middle" data-feather="sliders"></i>
-                        <span class="align-middle">Koordinator Relawan</span>
+                        <span class="align-middle">Koordinator Penghimpun</span>
                     </a>
                 </li>
             @endcan

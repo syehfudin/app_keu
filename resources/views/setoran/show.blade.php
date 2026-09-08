@@ -15,7 +15,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Tanggal Donasi</th>
-                                <th>Nama Donatur</th>
+                                <th>Nama Nasabah</th>
                                 <th>Nominal Donasi</th>
                             </tr>
                         </thead>

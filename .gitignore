@@ -25,3 +25,10 @@ yarn-error.log
 /public/js
 /public/images
 .DS_Store
+
+# Backup files
+*.bak
+*.bak.*
+# Credentials (never commit)
+storage/credentials.json
+storage/credentials.json.*

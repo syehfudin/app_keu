@@ -24,7 +24,7 @@ class PegawaiController extends Controller
         $this->middleware('permission:pegawai-create', ['only' => ['create', 'store']]);
         $this->middleware('permission:pegawai-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:pegawai-delete', ['only' => ['destroy']]);
-        $this->title = 'Data Relawan';
+        $this->title = 'Data Penghimpun';
         $this->redirectUrl = route('pegawai.index');
     }
 

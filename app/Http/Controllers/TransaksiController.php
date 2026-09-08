@@ -60,7 +60,7 @@ class TransaksiController extends Controller
                 'd.nama as nama_donatur',
                 DB::raw('sum(td.nominal_donasi) as total_donasi'),
                 'transaksi.id',
-                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Transfer ke Rek ULAMA' else 'Titip di Relawan' end as jenis_transaksi"),
+                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Transfer ke Rek ULAMA' else 'Titip di Penghimpun' end as jenis_transaksi"),
                 'transaksi.keterangan',
             ])
             ->groupBy([
@@ -68,12 +68,12 @@ class TransaksiController extends Controller
                 'transaksi.tanggal',
                 'p.nama',
                 'd.nama',
-                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Transfer ke Rek ULAMA' else 'Titip di Relawan' end"),
+                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Transfer ke Rek ULAMA' else 'Titip di Penghimpun' end"),
                 'transaksi.keterangan',
             ]);
         if (in_array($role, ['admin', 'manager'])) {
             $data = $query->get();
-        } elseif ($role == 'relawan') {
+        } elseif ($role == 'penghimpun') {
             $data = $query->where('transaksi.pegawai_id', Auth::user()->pegawai_id)->get();
         } else {
             $data = $query->leftJoin('korel as k', function ($join) {
@@ -105,7 +105,7 @@ class TransaksiController extends Controller
         $pegawai_id = Auth::user()->pegawai_id;
         $program = Program::where('status', true)->get();
         $role = strtolower(Auth::user()->roles[0]->name);
-        if ($role == 'relawan') {
+        if ($role == 'penghimpun') {
             $donatur = Donatur::where('pegawai_id', $pegawai_id)->get();
             $relawan = Pegawai::where('id', $pegawai_id)->get();
         } elseif (strtolower(Auth::user()->roles[0]->name) == 'supervisor') {
@@ -137,7 +137,7 @@ class TransaksiController extends Controller
             $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
                 ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
                 ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-                ->where('r.name', 'Relawan')
+                ->where('r.name', 'Penghimpun')
                 ->select([
                     'p.id',
                     'p.nama',
@@ -280,7 +280,7 @@ class TransaksiController extends Controller
         $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->where('r.name', 'Relawan')
+            ->where('r.name', 'Penghimpun')
             ->select([
                 'p.id',
                 'p.nama',
@@ -329,7 +329,7 @@ class TransaksiController extends Controller
         $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            // ->where('r.name', 'Relawan')
+            // ->where('r.name', 'Penghimpun')
             ->select([
                 'p.id',
                 'p.nama',
@@ -465,7 +465,7 @@ class TransaksiController extends Controller
                 'program.nama as nama_program', // Include program name in the select statement
                 DB::raw('sum(td.nominal_donasi) as total_donasi'),
                 'transaksi.id',
-                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Transfer ke Rek ULAMA' else 'Titip di Relawan' end as jenis_transaksi"),
+                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Transfer ke Rek ULAMA' else 'Titip di Penghimpun' end as jenis_transaksi"),
                 'transaksi.keterangan',
             ])
             ->where('transaksi.id', $id)
@@ -475,7 +475,7 @@ class TransaksiController extends Controller
                 'p.nama',
                 'd.nama',
                 'program.nama', // Include program name in the group by statement
-                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Transfer ke Rek ULAMA' else 'Titip di Relawan' end"),
+                DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Transfer ke Rek ULAMA' else 'Titip di Penghimpun' end"),
                 'transaksi.keterangan',
             ])
             ->first(); // Menggunakan first() karena hanya mengambil satu transaksi

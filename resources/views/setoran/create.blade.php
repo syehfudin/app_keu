@@ -13,7 +13,7 @@
                         @if(strtolower(Auth::user()->roles[0]->name) == 'admin')
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">
-                                <span class="required">Nama Relawan</span>
+                                <span class="required">Nama Penghimpun</span>
                             </label>
                             <select class="form-control" name="pegawai_id" id="pegawai_id">
                                 @foreach($relawan as $item)
@@ -59,7 +59,7 @@
 </div>
 @endsection
 @push('custom-js-files')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" crossorigin="anonymous"
+<script src="/plugins/handlebars/handlebars.min.js" crossorigin="anonymous"
     integrity="sha384-dzyupbI5ULkaeg4hBWhkXonQFoXGJvULMzDu6qStcgOkh+6BDdNN9NGGfhmY4ODA"></script>
 <script type="text/javascript">
 $(document).ready(function(){

@@ -3,7 +3,7 @@
 <div class="container-fluid p-0">
     <div class="col-lg-12 margin-tb">
         <div class="pull-left">
-            <h2>Tambah Data Relawan</h2>
+            <h2>Tambah Data Penghimpun</h2>
         </div>
         <div class="pull-right">
             <a class="btn btn-primary" href="{{ route('products.index') }}"> Back</a>
@@ -19,7 +19,7 @@
                             <label class="form-label">Jabatan</label>
                             <select class="form-control" name="jabatan">
                                 <option value="">Pilih jabatan ...</option>
-                                <option value="relawan">Relawan</option>
+                                <option value="penghimpun">Penghimpun</option>
                                 <option value="supervisor">Supervisor</option>
                                 <option value="manager">Manager</option>
                             </select>
@@ -29,7 +29,7 @@
                             <input type="text" class="form-control" nama="nip" placeholder="Masukan nama relawan">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Nama Relawan</label>
+                            <label class="form-label">Nama Penghimpun</label>
                             <input type="text" class="form-control" name="nama" placeholder="Masukan nama relawan">
                         </div>
                         <div class="mb-3">
@@ -38,7 +38,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Alamat</label>
-                            <textarea class="form-control" name="alamat" placeholder="Masukan Alamat Relawan"></textarea>
+                            <textarea class="form-control" name="alamat" placeholder="Masukan Alamat Penghimpun"></textarea>
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-12 text-center">
                                 <button type="submit" class="btn btn-lg btn-primary">Submit</button>

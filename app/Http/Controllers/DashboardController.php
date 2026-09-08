@@ -2,135 +2,194 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Program;
+use App\Models\Donatur;
 use App\Models\Transaksi;
+use App\Models\TransaksiDetail;
+use App\Models\Pegawai;
+use App\Models\Korel;
 use Auth;
-use DataTables;
 use DB;
 use Illuminate\Http\Request;
+use App\Traits\HasHierarchy;
 
 class DashboardController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+    use HasHierarchy;
+
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
-        $role = strtolower(Auth::user()->roles[0]->name);
         $title = 'Dashboard';
+        $role = strtolower(Auth::user()->roles[0]->name);
+        $isAdminOrManager = in_array($role, ['admin', 'manager']);
 
-        return view('dashboard.index', compact('title'));
+        // Today and current month/year
+        $today = date('Y-m-d');
+        $currentMonth = date('n');
+        $currentYear = date('Y');
+
+        $accessibleIds = $this->getAccessiblePegawaiIds();
+
+        // 1. Report per Penghimpun - Daily
+        $dailyPenghimpun = $this->getPenghimpunReport($today, 'daily', $accessibleIds);
+
+        // 2. Report per Penghimpun - Monthly
+        $monthlyPenghimpun = $this->getPenghimpunReport($currentYear . '-' . str_pad($currentMonth, 2, '0', STR_PAD_LEFT), 'monthly', $accessibleIds);
+
+        // 3. Report per Supervisor - Daily & Monthly (Admin/Manager only)
+        $dailySupervisor = [];
+        $monthlySupervisor = [];
+        if ($isAdminOrManager) {
+            $dailySupervisor = $this->getSupervisorReport($today, 'daily');
+            $monthlySupervisor = $this->getSupervisorReport($currentYear . '-' . str_pad($currentMonth, 2, '0', STR_PAD_LEFT), 'monthly');
+        }
+
+        // 4. Yearly Report per Supervisor
+        $yearlySupervisor = [];
+        if ($isAdminOrManager) {
+            $yearlySupervisor = $this->getSupervisorYearlyReport($currentYear);
+        }
+
+        return view('dashboard.index', compact(
+            'title', 'role', 'isAdminOrManager',
+            'dailyPenghimpun', 'monthlyPenghimpun',
+            'dailySupervisor', 'monthlySupervisor',
+            'yearlySupervisor', 'currentYear'
+        ));
     }
 
-    public function indexData(Request $request)
+    private function getPenghimpunReport($date, $type, $accessibleIds)
     {
-        $role = strtolower(Auth::user()->roles[0]->name);
-        $type = $request['type'];
-        $query = Program::leftJoin('transaksi_detail as td', 'td.program_id', '=', 'program.id')
-            ->leftJoin('transaksi as t', 'td.transaksi_id', '=', 't.id')
-            ->select([
-                'program.nama as nama_program',
-                DB::raw('count(t.id) as count_nominal'),
-                DB::raw('sum(coalesce(td.nominal_donasi, 0)) as sum_nonimal'),
-                DB::raw('sum(case when extract(month from t.tanggal) = 1 then td.nominal_donasi else 0 end) as jan'),
-                DB::raw('sum(case when extract(month from t.tanggal) = 2 then td.nominal_donasi else 0 end) as feb'),
-                DB::raw('sum(case when extract(month from t.tanggal) = 3 then td.nominal_donasi else 0 end) as mar'),
-                DB::raw('sum(case when extract(month from t.tanggal) = 4 then td.nominal_donasi else 0 end) as apr'),
-                DB::raw('sum(case when extract(month from t.tanggal) = 5 then td.nominal_donasi else 0 end) as mei'),
-                DB::raw('sum(case when extract(month from t.tanggal) = 6 then td.nominal_donasi else 0 end) as jun'),
-                DB::raw('sum(case when extract(month from t.tanggal) = 7 then td.nominal_donasi else 0 end) as jul'),
-                DB::raw('sum(case when extract(month from t.tanggal) = 8 then td.nominal_donasi else 0 end) as agu'),
-                DB::raw('sum(case when extract(month from t.tanggal) = 9 then td.nominal_donasi else 0 end) as sep'),
-                DB::raw('sum(case when extract(month from t.tanggal) = 10 then td.nominal_donasi else 0 end) as okt'),
-                DB::raw('sum(case when extract(month from t.tanggal) = 11 then td.nominal_donasi else 0 end) as nov'),
-                DB::raw('sum(case when extract(month from t.tanggal) = 12 then td.nominal_donasi else 0 end) as des'),
-                DB::raw('count(case when extract(month from t.tanggal) = 1 then td.nominal_donasi end) as count_jan'),
-                DB::raw('count(case when extract(month from t.tanggal) = 2 then td.nominal_donasi end) as count_feb'),
-                DB::raw('count(case when extract(month from t.tanggal) = 3 then td.nominal_donasi end) as count_mar'),
-                DB::raw('count(case when extract(month from t.tanggal) = 4 then td.nominal_donasi end) as count_apr'),
-                DB::raw('count(case when extract(month from t.tanggal) = 5 then td.nominal_donasi end) as count_mei'),
-                DB::raw('count(case when extract(month from t.tanggal) = 6 then td.nominal_donasi end) as count_jun'),
-                DB::raw('count(case when extract(month from t.tanggal) = 7 then td.nominal_donasi end) as count_jul'),
-                DB::raw('count(case when extract(month from t.tanggal) = 8 then td.nominal_donasi end) as count_agu'),
-                DB::raw('count(case when extract(month from t.tanggal) = 9 then td.nominal_donasi end) as count_sep'),
-                DB::raw('count(case when extract(month from t.tanggal) = 10 then td.nominal_donasi end) as count_okt'),
-                DB::raw('count(case when extract(month from t.tanggal) = 11 then td.nominal_donasi end) as count_nov'),
-                DB::raw('count(case when extract(month from t.tanggal) = 12 then td.nominal_donasi end) as count_des'),
+        $query = Pegawai::select([
+                'pegawai.id',
+                'pegawai.nama as nama_penghimpun',
+                DB::raw('COUNT(DISTINCT t.id) as jumlah_transaksi'),
+                DB::raw('COUNT(DISTINCT d.id) as jumlah_nasabah'),
+                DB::raw('COALESCE(SUM(td.nominal_donasi), 0) as total_nominal'),
             ])
-            ->groupBy([
-                'program.nama',
-            ]);
-
-        if (in_array($role, ['admin', 'manager'])) {
-            // $data = $query->get();
-        } elseif ($role == 'relawan') {
-            $query = $query->where('t.pegawai_id', Auth::user()->pegawai_id);
-        } else {
-            $query = $query->leftJoin('korel as k', function ($join) {
-                $join->on('t.pegawai_id', '=', 'k.bawahan_id');
-                $join->orOn('t.pegawai_id', '=', 'k.kepala_id', 'or');
+            ->leftJoin('transaksi as t', 't.pegawai_id', '=', 'pegawai.id')
+            ->leftJoin('transaksi_detail as td', 'td.transaksi_id', '=', 't.id')
+            ->leftJoin('donatur as d', function ($join) {
+                $join->on('d.pegawai_id', '=', 'pegawai.id')
+                    ->where('d.id', '!=', null);
             })
-                ->where('k.kepala_id', Auth::user()->pegawai_id);
-        }
+            ->whereExists(function ($q) {
+                $q->select(DB::raw(1))
+                    ->from('users as u')
+                    ->join('model_has_roles as mhr', 'u.id', '=', 'mhr.model_id')
+                    ->join('roles as r', 'r.id', '=', 'mhr.role_id')
+                    ->whereColumn('u.pegawai_id', 'pegawai.id')
+                    ->whereRaw("lower(r.name) = 'penghimpun'");
+            })
+            ->groupBy('pegawai.id', 'pegawai.nama');
 
         if ($type == 'daily') {
-            $data = $query->where('t.tanggal', date('Y-m-d', strtotime($request['tanggal'])))
-                ->get();
+            $query->where('t.tanggal', $date);
         } elseif ($type == 'monthly') {
-            $data = $query->where(DB::raw("to_char(t.tanggal, 'mm')"), date('m', strtotime($request['tanggal'])))
-                ->where(DB::raw("to_char(t.tanggal, 'yyyy')"), date('Y', strtotime($request['tanggal'])))
-                ->get();
-        } else {
-            $data = $query->where(DB::raw("to_char(t.tanggal, 'yyyy')"), date('Y', strtotime($request['tanggal'])))
-                ->get();
+            $query->whereMonth('t.tanggal', date('n', strtotime($date . '-01')))
+                  ->whereYear('t.tanggal', date('Y', strtotime($date . '-01')));
         }
 
-        return Datatables::of($data)
-            ->addIndexColumn()
-            ->make(true);
+        if ($accessibleIds !== null) {
+            $query->whereIn('pegawai.id', $accessibleIds);
+        }
+
+        return $query->orderBy('pegawai.nama')->get();
     }
 
-    public function indexDataChart(Request $request)
+    private function getSupervisorReport($date, $type)
     {
-        $role = strtolower(Auth::user()->roles[0]->name);
-        $pegawai_id = Auth::user()->pegawai_id;
-        $tanggal = date('Y', strtotime($request['tanggal']));
-
-        $query = Transaksi::leftJoin('transaksi_detail as td', 'transaksi.id', '=', 'td.transaksi_id')
-                ->select([
-                    DB::raw("to_char(transaksi.tanggal, 'mm') as mon"),
-                    DB::raw('sum(td.nominal_donasi) as total_donasi'),
-                ])
-                ->where(DB::raw("to_char(transaksi.tanggal, 'yyyy')"), $tanggal)
-                ->groupBy([
-                    DB::raw("to_char(transaksi.tanggal, 'mm')"),
-                ]);
-
-        if (in_array($role, ['admin', 'manager'])) {
-            $data = $query->get();
-        } elseif ($role == 'relawan') {
-            $data = $query->where('transaksi.pegawai_id', $pegawai_id)->get();
-        } else {
-            $data = $query->leftJoin('korel as k', function ($join) {
-                $join->on('transaksi.pegawai_id', '=', 'k.bawahan_id');
-                $join->orOn('transaksi.pegawai_id', '=', 'k.kepala_id', 'or');
+        $supervisors = Pegawai::select([
+                'pegawai.id',
+                'pegawai.nama as nama_supervisor',
+                DB::raw('COUNT(DISTINCT t.id) as jumlah_transaksi'),
+                DB::raw('COUNT(DISTINCT d.id) as jumlah_nasabah'),
+                DB::raw('COALESCE(SUM(td.nominal_donasi), 0) as total_nominal'),
+            ])
+            ->leftJoin('korel as k', 'k.kepala_id', '=', 'pegawai.id')
+            ->leftJoin('pegawai as bawahan', function ($join) {
+                $join->on('bawahan.id', '=', 'k.bawahan_id')
+                    ->orOn('bawahan.id', '=', 'pegawai.id');
             })
-                ->where('k.kepala_id', $pegawai_id)
-                ->get();
+            ->leftJoin('transaksi as t', 't.pegawai_id', '=', 'bawahan.id')
+            ->leftJoin('transaksi_detail as td', 'td.transaksi_id', '=', 't.id')
+            ->leftJoin('donatur as d', function ($join) {
+                $join->on('d.pegawai_id', '=', 'bawahan.id');
+            })
+            ->whereExists(function ($q) {
+                $q->select(DB::raw(1))
+                    ->from('users as u')
+                    ->join('model_has_roles as mhr', 'u.id', '=', 'mhr.model_id')
+                    ->join('roles as r', 'r.id', '=', 'mhr.role_id')
+                    ->whereColumn('u.pegawai_id', 'pegawai.id')
+                    ->whereIn(DB::raw('lower(r.name)'), ['supervisor', 'manager']);
+            })
+            ->groupBy('pegawai.id', 'pegawai.nama');
+
+        if ($type == 'daily') {
+            $supervisors->where('t.tanggal', $date);
+        } elseif ($type == 'monthly') {
+            $supervisors->whereMonth('t.tanggal', date('n', strtotime($date . '-01')))
+                        ->whereYear('t.tanggal', date('Y', strtotime($date . '-01')));
         }
 
-        return json_encode($data);
+        return $supervisors->orderBy('pegawai.nama')->get();
+    }
+
+    private function getSupervisorYearlyReport($year)
+    {
+        $supervisors = Pegawai::select([
+                'pegawai.id',
+                'pegawai.nama as nama_supervisor',
+                DB::raw('COUNT(DISTINCT d.id) as jumlah_nasabah_terdaftar'),
+            ])
+            ->leftJoin('korel as k', 'k.kepala_id', '=', 'pegawai.id')
+            ->leftJoin('pegawai as bawahan', function ($join) {
+                $join->on('bawahan.id', '=', 'k.bawahan_id')
+                    ->orOn('bawahan.id', '=', 'pegawai.id');
+            })
+            ->leftJoin('donatur as d', 'd.pegawai_id', '=', 'bawahan.id')
+            ->whereExists(function ($q) {
+                $q->select(DB::raw(1))
+                    ->from('users as u')
+                    ->join('model_has_roles as mhr', 'u.id', '=', 'mhr.model_id')
+                    ->join('roles as r', 'r.id', '=', 'mhr.role_id')
+                    ->whereColumn('u.pegawai_id', 'pegawai.id')
+                    ->whereIn(DB::raw('lower(r.name)'), ['supervisor', 'manager']);
+            })
+            ->groupBy('pegawai.id', 'pegawai.nama')
+            ->orderBy('pegawai.nama')
+            ->get();
+
+        // For each supervisor, get monthly nasabah tunai count and nominal
+        foreach ($supervisors as $sup) {
+            $bawahanIds = Korel::where('kepala_id', $sup->id)->pluck('bawahan_id')->toArray();
+            $bawahanIds[] = $sup->id;
+
+            for ($m = 1; $m <= 12; $m++) {
+                $data = Donatur::leftJoin('transaksi as t', function ($join) use ($m, $year) {
+                        $join->on('donatur.id', '=', 't.donatur_id')
+                            ->whereMonth('t.tanggal', $m)
+                            ->whereYear('t.tanggal', $year)
+                            ->whereIn('t.jenis_transaksi', ['cash', 'transfer']);
+                    })
+                    ->leftJoin('transaksi_detail as td', 't.id', '=', 'td.transaksi_id')
+                    ->whereIn('donatur.pegawai_id', $bawahanIds)
+                    ->select([
+                        DB::raw('COUNT(DISTINCT donatur.id) as jumlah_nasabah'),
+                        DB::raw('COALESCE(SUM(td.nominal_donasi), 0) as nominal'),
+                    ])
+                    ->first();
+
+                $sup->{'m' . $m . '_nasabah'} = $data->jumlah_nasabah ?? 0;
+                $sup->{'m' . $m . '_nominal'} = $data->nominal ?? 0;
+            }
+        }
+
+        return $supervisors;
     }
 }

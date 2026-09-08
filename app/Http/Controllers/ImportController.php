@@ -239,15 +239,23 @@ class ImportController extends Controller
         $errors = [];
         $rowNum = 0;
 
-        // Build pegawai name → id map
+        // Build pegawai name -> id map
         $pegawaiMap = Pegawai::pluck('id', 'nama')->toArray();
 
         // Build pekerjaan set
         $pekerjaanList = Pekerjaan::pluck('nama')->toArray();
 
+        // Build existing nasabah map (pegawai_id + nama => donatur)
+        $existingNasabah = Donatur::all()->keyBy(function ($item) {
+            return $item->pegawai_id . '|' . strtolower(trim($item->nama));
+        });
+
+        $updated = 0;
+        $skipped = 0;
+
         foreach ($data as $row) {
             $rowNum++;
-            if ($rowNum == 1) continue; // Skip header
+            if ($rowNum == 1) continue;
 
             $namaPenghimpun = trim($row['A'] ?? '');
             $namaNasabah = trim($row['B'] ?? '');
@@ -260,31 +268,59 @@ class ImportController extends Controller
                 continue;
             }
 
-            // Find pegawai by name
             $pegawaiId = $pegawaiMap[$namaPenghimpun] ?? null;
             if (!$pegawaiId) {
                 $errors[] = "Baris $rowNum: Penghimpun '$namaPenghimpun' tidak ditemukan";
                 continue;
             }
 
-            // Validate pekerjaan
             if (!empty($pekerjaan) && !in_array($pekerjaan, $pekerjaanList)) {
                 $errors[] = "Baris $rowNum: Pekerjaan '$pekerjaan' tidak valid";
                 $pekerjaan = '';
             }
 
-            Donatur::create([
-                'pegawai_id' => $pegawaiId,
-                'nama' => $namaNasabah,
-                'alamat' => $alamat,
-                'no_telepon' => $noTelepon,
-                'pekerjaan' => $pekerjaan,
-            ]);
+            // Check if nasabah already exists (same penghimpun + same name)
+            $key = $pegawaiId . '|' . strtolower($namaNasabah);
+            $existing = $existingNasabah->get($key);
 
-            $imported++;
+            if ($existing) {
+                // Update only changed columns
+                $changed = false;
+                if ($existing->alamat != $alamat && !empty($alamat)) {
+                    $existing->alamat = $alamat;
+                    $changed = true;
+                }
+                if ($existing->no_telepon != $noTelepon && !empty($noTelepon)) {
+                    $existing->no_telepon = $noTelepon;
+                    $changed = true;
+                }
+                if ($existing->pekerjaan != $pekerjaan && !empty($pekerjaan)) {
+                    $existing->pekerjaan = $pekerjaan;
+                    $changed = true;
+                }
+                if ($existing->pegawai_id != $pegawaiId) {
+                    $existing->pegawai_id = $pegawaiId;
+                    $changed = true;
+                }
+                if ($changed) {
+                    $existing->save();
+                    $updated++;
+                } else {
+                    $skipped++;
+                }
+            } else {
+                Donatur::create([
+                    'pegawai_id' => $pegawaiId,
+                    'nama' => $namaNasabah,
+                    'alamat' => $alamat,
+                    'no_telepon' => $noTelepon,
+                    'pekerjaan' => $pekerjaan,
+                ]);
+                $imported++;
+            }
         }
 
-        $msg = "Berhasil import $imported data nasabah.";
+        $msg = "Berhasil import $imported data nasabah baru, $updated diupdate, $skipped dilewati.";
         if (count($errors) > 0) {
             $msg .= " " . count($errors) . " error: " . implode('; ', array_slice($errors, 0, 5));
         }

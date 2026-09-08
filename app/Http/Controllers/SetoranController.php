@@ -14,9 +14,11 @@ use Auth;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
+use App\Traits\HasHierarchy;
 
 class SetoranController extends Controller
 {
+    use HasHierarchy;
     public function __construct()
     {
         $this->middleware('permission:setoran-list|setoran-create|setoran-edit|setoran-delete', ['only' => ['index', 'show', 'indexData']]);
@@ -69,16 +71,11 @@ class SetoranController extends Controller
             ])
             ->orderBy('setoran.created_at', 'desc');
 
-        if (in_array($role, ['admin', 'manager'])) {
+        $accessibleIds = $this->getAccessiblePegawaiIds();
+        if ($accessibleIds === null) {
             $data = $query->get();
-        } elseif ($role == 'relawan') {
-            $data = $query->where('setoran.pegawai_id', $pegawai_id)->get();
         } else {
-            $data = $query->leftJoin('korel as k', function ($join) {
-                $join->on('setoran.pegawai_id', '=', 'k.bawahan_id');
-                $join->orOn('setoran.pegawai_id', '=', 'k.kepala_id', 'or');
-            })
-                ->where('k.kepala_id', $pegawai_id)->get();
+            $data = $query->whereIn('setoran.pegawai_id', $accessibleIds)->get();
         }
 
         return Datatables::of($data)

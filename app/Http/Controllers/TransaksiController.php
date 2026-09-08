@@ -15,11 +15,13 @@ use Auth;
 use DataTables;
 use DB;
 use Illuminate\Http\Request;
+use App\Traits\HasHierarchy;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\View;
 
 class TransaksiController extends Controller
 {
+    use HasHierarchy;
     public $title;
 
     public $redirectUrl;
@@ -71,16 +73,11 @@ class TransaksiController extends Controller
                 DB::raw("case when transaksi.jenis_transaksi = 'transfer' then 'Setoran Transfer' else 'Titip di Penghimpun' end"),
                 'transaksi.keterangan',
             ]);
-        if (in_array($role, ['admin', 'manager'])) {
+        $accessibleIds = $this->getAccessiblePegawaiIds();
+        if ($accessibleIds === null) {
             $data = $query->get();
-        } elseif ($role == 'penghimpun') {
-            $data = $query->where('transaksi.pegawai_id', Auth::user()->pegawai_id)->get();
         } else {
-            $data = $query->leftJoin('korel as k', function ($join) {
-                $join->on('transaksi.pegawai_id', '=', 'k.bawahan_id');
-                $join->orOn('transaksi.pegawai_id', '=', 'k.kepala_id', 'or');
-            })
-                ->where('k.kepala_id', Auth::user()->pegawai_id)->get();
+            $data = $query->whereIn('transaksi.pegawai_id', $accessibleIds)->get();
         }
 
         return Datatables::of($data)
@@ -105,18 +102,12 @@ class TransaksiController extends Controller
         $pegawai_id = Auth::user()->pegawai_id;
         $program = Program::where('status', true)->get();
         $role = strtolower(Auth::user()->roles[0]->name);
+        $accessibleIds = $this->getAccessiblePegawaiIds();
         if ($role == 'penghimpun') {
             $donatur = Donatur::where('pegawai_id', $pegawai_id)->get();
             $relawan = Pegawai::where('id', $pegawai_id)->get();
-        } elseif (strtolower(Auth::user()->roles[0]->name) == 'supervisor') {
-            $donatur = Donatur::join('korel as k', function ($join) {
-                $join->on('donatur.pegawai_id', '=', 'k.bawahan_id');
-                $join->orOn('donatur.pegawai_id', '=', 'k.kepala_id', 'or');
-            })
-                ->select([
-                    'donatur.*',
-                ])
-                ->get();
+        } elseif ($role == 'supervisor') {
+            $donatur = Donatur::whereIn('pegawai_id', $accessibleIds)->get();
 
             $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
                 ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')

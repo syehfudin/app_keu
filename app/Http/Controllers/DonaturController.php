@@ -8,9 +8,11 @@ use App\Models\User;
 use Auth;
 use DataTables;
 use Illuminate\Http\Request;
+use App\Traits\HasHierarchy;
 
 class DonaturController extends Controller
 {
+    use HasHierarchy;
     /**
      * Display a listing of the resource.
      *
@@ -51,16 +53,11 @@ class DonaturController extends Controller
                 'p.nama as nama_relawan',
             ]);
 
-        if (in_array($role, ['admin', 'manager'])) {
+        $accessibleIds = $this->getAccessiblePegawaiIds();
+        if ($accessibleIds === null) {
             $data = $query->get();
-        } elseif ($role == 'relawan') {
-            $data = $query->where('donatur.pegawai_id', $pegawai_id)->get();
         } else {
-            $data = $query->leftJoin('korel as k', function ($join) {
-                $join->on('donatur.pegawai_id', '=', 'k.bawahan_id');
-                $join->orOn('donatur.pegawai_id', '=', 'k.kepala_id', 'or');
-            })
-                ->where('k.kepala_id', $pegawai_id)->get();
+            $data = $query->whereIn('donatur.pegawai_id', $accessibleIds)->get();
         }
 
         return Datatables::of($data)

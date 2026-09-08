@@ -9,9 +9,11 @@ use App\Models\Reha;
 use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
+use App\Traits\HasHierarchy;
 
 class RehaController extends Controller
 {
+    use HasHierarchy;
     /**
      * Display a listing of the resource.
      *
@@ -70,8 +72,11 @@ class RehaController extends Controller
         $redirectUrl = $this->redirectUrl;
         $pegawai_id = Auth::user()->pegawai_id;
         $role = strtolower(Auth::user()->roles[0]->name);
-        if ($role == 'relawan') {
+        $accessibleIds = $this->getAccessiblePegawaiIds();
+        if ($role == 'penghimpun') {
             $relawan = Pegawai::where('id', $pegawai_id)->get();
+        } elseif ($role == 'supervisor') {
+            $relawan = Pegawai::whereIn('id', $accessibleIds)->get();
         } else {
             $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
                 ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')

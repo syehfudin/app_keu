@@ -9,10 +9,12 @@ use DataTables;
 use DB;
 use Hash;
 use Illuminate\Http\Request;
+use App\Traits\HasHierarchy;
 use Spatie\Permission\Models\Role;
 
 class PegawaiController extends Controller
 {
+    use HasHierarchy;
     /**
      * Display a listing of the resource.
      *
@@ -61,6 +63,9 @@ class PegawaiController extends Controller
 
         if (in_array($role, ['admin', 'manager'])) {
             $data = $query->get();
+        } elseif ($role == 'supervisor') {
+            $accessibleIds = $this->getAccessiblePegawaiIds();
+            $data = $query->whereIn('p.id', $accessibleIds)->get();
         } else {
             $data = $query->leftJoin('korel as k', function ($join) {
                 $join->on('p.id', '=', 'k.bawahan_id');

@@ -113,6 +113,46 @@
         </div>
     </div>
 
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card card-success">
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-bar"></i> Report Tahunan per Penghimpun - {{ $selectedYear }}</h3></div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">No</th>
+                                    <th rowspan="2">Nama Penghimpun</th>
+                                    <th rowspan="2" class="text-center">Nasabah<br>Terdaftar</th>
+                                    <th colspan="2" class="text-center">Jan</th><th colspan="2" class="text-center">Feb</th><th colspan="2" class="text-center">Mar</th><th colspan="2" class="text-center">Apr</th><th colspan="2" class="text-center">Mei</th><th colspan="2" class="text-center">Jun</th><th colspan="2" class="text-center">Jul</th><th colspan="2" class="text-center">Agu</th><th colspan="2" class="text-center">Sep</th><th colspan="2" class="text-center">Okt</th><th colspan="2" class="text-center">Nov</th><th colspan="2" class="text-center">Des</th>
+                                </tr>
+                                <tr>
+                                    @for($m=1;$m<=12;$m++)<th class="text-center">Nsb</th><th class="text-right">Nominal</th>@endfor
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($yearlyPenghimpun as $i => $ph)
+                                <tr>
+                                    <td>{{ $i+1 }}</td>
+                                    <td>{{ $ph->nama_penghimpun }}</td>
+                                    <td class="text-center"><strong>{{ $ph->jumlah_nasabah_terdaftar }}</strong></td>
+                                    @for($m=1;$m<=12;$m++)
+                                        <td class="text-center">{{ $ph->{'m'.$m.'_nasabah'} }}</td>
+                                        <td class="text-right" style="font-size:11px;">Rp {{ number_format($ph->{'m'.$m.'_nominal'}, 0, ',', '.') }}</td>
+                                    @endfor
+                                </tr>
+                                @endforeach
+                                @if($yearlyPenghimpun->isEmpty())<tr><td colspan="29" class="text-center text-muted">Tidak ada data</td></tr>@endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row mt-3">
         <div class="col-12">
             <div class="card card-danger">

@@ -54,11 +54,13 @@ class DashboardController extends Controller
             $yearlySupervisor = $this->getSupervisorYearlyReport($selectedYear);
         }
 
+        $yearlyPenghimpun = $this->getPenghimpunYearlyReport($selectedYear, $accessibleIds);
+
         return view('dashboard.index', compact(
             'title', 'role', 'isAdminOrManager',
             'dailyPenghimpun', 'monthlyPenghimpun',
             'dailySupervisor', 'monthlySupervisor',
-            'yearlySupervisor', 'selectedYear',
+            'yearlySupervisor', 'yearlyPenghimpun', 'selectedYear',
             'tanggalInput', 'tanggalDisplay', 'bulanDisplay'
         ));
     }
@@ -192,5 +194,54 @@ class DashboardController extends Controller
         }
 
         return $supervisors;
+    }
+
+    private function getPenghimpunYearlyReport($year, $accessibleIds)
+    {
+        $penghimpun = Pegawai::select([
+                'pegawai.id',
+                'pegawai.nama as nama_penghimpun',
+                DB::raw('COUNT(DISTINCT d.id) as jumlah_nasabah_terdaftar'),
+            ])
+            ->leftJoin('donatur as d', 'd.pegawai_id', '=', 'pegawai.id')
+            ->whereExists(function ($q) {
+                $q->select(DB::raw(1))
+                    ->from('users as u')
+                    ->join('model_has_roles as mhr', 'u.id', '=', 'mhr.model_id')
+                    ->join('roles as r', 'r.id', '=', 'mhr.role_id')
+                    ->whereColumn('u.pegawai_id', 'pegawai.id')
+                    ->whereRaw("lower(r.name) = 'penghimpun'");
+            })
+            ->groupBy('pegawai.id', 'pegawai.nama')
+            ->orderBy('pegawai.nama');
+
+        if ($accessibleIds !== null) {
+            $penghimpun->whereIn('pegawai.id', $accessibleIds);
+        }
+
+        $penghimpun = $penghimpun->get();
+
+        foreach ($penghimpun as $ph) {
+            for ($m = 1; $m <= 12; $m++) {
+                $data = Donatur::leftJoin('transaksi as t', function ($join) use ($m, $year) {
+                        $join->on('donatur.id', '=', 't.donatur_id')
+                            ->whereMonth('t.tanggal', $m)
+                            ->whereYear('t.tanggal', $year)
+                            ->whereIn('t.jenis_transaksi', ['cash', 'transfer']);
+                    })
+                    ->leftJoin('transaksi_detail as td', 't.id', '=', 'td.transaksi_id')
+                    ->where('donatur.pegawai_id', $ph->id)
+                    ->select([
+                        DB::raw('COUNT(DISTINCT donatur.id) as jumlah_nasabah'),
+                        DB::raw('COALESCE(SUM(td.nominal_donasi), 0) as nominal'),
+                    ])
+                    ->first();
+
+                $ph->{'m' . $m . '_nasabah'} = $data->jumlah_nasabah ?? 0;
+                $ph->{'m' . $m . '_nominal'} = $data->nominal ?? 0;
+            }
+        }
+
+        return $penghimpun;
     }
 }

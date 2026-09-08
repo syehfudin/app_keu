@@ -41,7 +41,7 @@
     </div>
 
     <div class="row mb-3">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="small-box bg-info">
                 <div class="inner">
                     <h3>{{ number_format($totalTransaksi, 0, ',', '.') }}</h3>
@@ -50,21 +50,30 @@
                 <i class="fas fa-receipt" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>Rp {{ number_format($totalSemua, 0, ',', '.') }}</h3>
-                    <p>Total Donasi - {{ $bulanList[$bulan] }} {{ $tahun }}</p>
+                    <h3>Rp {{ number_format($totalSudahSetor, 0, ',', '.') }}</h3>
+                    <p>Total Sudah Setor - {{ $bulanList[$bulan] }} {{ $tahun }}</p>
                 </div>
-                <i class="fas fa-money-bill-wave" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
+                <i class="fas fa-check-circle" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3>Rp {{ number_format($totalBelumSetor, 0, ',', '.') }}</h3>
+                    <p>Total Belum Setor - {{ $bulanList[$bulan] }} {{ $tahun }}</p>
+                </div>
+                <i class="fas fa-clock" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
             </div>
         </div>
     </div>
 
     @php
-        $colCount = 7;
+        $colCount = 8;
         $isAdmin = auth()->user()->hasRole('Admin');
-        if (!$isAdmin) { $colCount = 6; }
+        if (!$isAdmin) { $colCount = 7; }
     @endphp
 
     <div class="row">
@@ -85,11 +94,24 @@
                                 <th>No Telepon</th>
                                 <th>Alamat</th>
                                 <th class="text-center">Jumlah Transaksi</th>
+                                <th class="text-center">Status Setor</th>
                                 <th class="text-right">Total Donasi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($data as $item)
+                            @php
+                                if ($item->cnt_cash_belum > 0 && $item->total_belum_setor > 0) {
+                                    $statusBadge = 'badge-danger';
+                                    $statusText = 'Belum Setor';
+                                } elseif ($item->jumlah_transaksi > 0) {
+                                    $statusBadge = 'badge-success';
+                                    $statusText = 'Sudah Setor';
+                                } else {
+                                    $statusBadge = 'badge-secondary';
+                                    $statusText = 'Belum Ada Transaksi';
+                                }
+                            @endphp
                             <tr>
                                 <td></td>
                                 <td>{{ $item->nama }}</td>
@@ -100,10 +122,13 @@
                                 <td>{{ $item->alamat ?? '-' }}</td>
                                 <td class="text-center">
                                     @if($item->jumlah_transaksi > 0)
-                                        <span class="badge badge-success">{{ $item->jumlah_transaksi }}</span>
+                                        <span class="badge badge-info">{{ $item->jumlah_transaksi }}</span>
                                     @else
                                         <span class="badge badge-secondary">0</span>
                                     @endif
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge {{ $statusBadge }}">{{ $statusText }}</span>
                                 </td>
                                 <td class="text-right">Rp {{ number_format($item->total_donasi, 0, ',', '.') }}</td>
                             </tr>
@@ -111,8 +136,12 @@
                         </tbody>
                         <tfoot>
                             <tr style="font-weight: bold; background-color: #f8f9fa;">
-                                <td colspan="{{ $colCount - 2 }}" class="text-right">TOTAL</td>
+                                <td colspan="{{ $colCount - 3 }}" class="text-right">TOTAL</td>
                                 <td class="text-center">{{ $totalTransaksi }}</td>
+                                <td class="text-center">
+                                    <span class="badge badge-success">Sudah: Rp {{ number_format($totalSudahSetor, 0, ',', '.') }}</span><br>
+                                    <span class="badge badge-danger">Belum: Rp {{ number_format($totalBelumSetor, 0, ',', '.') }}</span>
+                                </td>
                                 <td class="text-right">Rp {{ number_format($totalSemua, 0, ',', '.') }}</td>
                             </tr>
                         </tfoot>
@@ -134,21 +163,14 @@
 <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
 <script type="text/javascript">
     $('#datatable-tunai').DataTable({
-        "responsive": true,
-        "lengthChange": true,
-        "autoWidth": false,
+        "responsive": true, "lengthChange": true, "autoWidth": false,
         "dom": 'Bfrtip',
         "buttons": [
             { extend: 'copyHtml5', text: '<i class="fas fa-copy"></i> Copy', className: 'btn btn-sm btn-default' },
             { extend: 'excelHtml5', text: '<i class="fas fa-file-excel"></i> Excel', className: 'btn btn-sm btn-success' },
             { extend: 'print', text: '<i class="fas fa-print"></i> Print', className: 'btn btn-sm btn-default' }
         ],
-        "columnDefs": [{
-            targets: 0,
-            render: function(data, type, row, meta) {
-                return meta.row + 1;
-            }
-        }],
+        "columnDefs": [{ targets: 0, render: function(data, type, row, meta) { return meta.row + 1; } }],
         "order": [[5, 'desc']]
     });
 </script>

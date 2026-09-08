@@ -35,11 +35,12 @@ class ListTunaiController extends Controller
         $query = Donatur::leftJoin('pegawai as p', 'donatur.pegawai_id', '=', 'p.id')
             ->leftJoin('transaksi as t', function ($join) use ($bulan, $tahun) {
                 $join->on('donatur.id', '=', 't.donatur_id')
-                    ->where('t.jenis_transaksi', 'cash')
+                    ->whereIn('t.jenis_transaksi', ['cash', 'transfer'])
                     ->whereMonth('t.tanggal', $bulan)
                     ->whereYear('t.tanggal', $tahun);
             })
             ->leftJoin('transaksi_detail as td', 't.id', '=', 'td.transaksi_id')
+            ->leftJoin('setoran_detail as sd', 'sd.transaksi_id', '=', 't.id')
             ->select([
                 'donatur.id',
                 'donatur.nama',
@@ -49,6 +50,9 @@ class ListTunaiController extends Controller
                 'donatur.pegawai_id',
                 DB::raw('COUNT(DISTINCT t.id) as jumlah_transaksi'),
                 DB::raw('COALESCE(SUM(td.nominal_donasi), 0) as total_donasi'),
+                DB::raw("COALESCE(SUM(CASE WHEN t.jenis_transaksi = 'transfer' THEN td.nominal_donasi ELSE 0 END), 0) + COALESCE(SUM(CASE WHEN t.jenis_transaksi = 'cash' AND sd.id IS NOT NULL THEN td.nominal_donasi ELSE 0 END), 0) as total_sudah_setor"),
+                DB::raw("COALESCE(SUM(CASE WHEN t.jenis_transaksi = 'cash' AND sd.id IS NULL THEN td.nominal_donasi ELSE 0 END), 0) as total_belum_setor"),
+                DB::raw("COUNT(DISTINCT CASE WHEN t.jenis_transaksi = 'cash' AND sd.id IS NULL THEN t.id END) as cnt_cash_belum"),
             ])
             ->groupBy([
                 'donatur.id', 'donatur.nama', 'donatur.no_telepon',
@@ -63,10 +67,12 @@ class ListTunaiController extends Controller
 
         $totalSemua = $data->sum('total_donasi');
         $totalTransaksi = $data->sum('jumlah_transaksi');
+        $totalSudahSetor = $data->sum('total_sudah_setor');
+        $totalBelumSetor = $data->sum('total_belum_setor');
 
         return view('tunai.index', compact(
             'title', 'data', 'bulanList', 'bulan', 'tahun',
-            'totalSemua', 'totalTransaksi'
+            'totalSemua', 'totalTransaksi', 'totalSudahSetor', 'totalBelumSetor'
         ));
     }
 }

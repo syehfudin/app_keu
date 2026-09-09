@@ -78,12 +78,11 @@ class DashboardController extends Controller
                 ])
                 ->join('transaksi as t', function ($join) use ($date) {
                     $join->on('t.pegawai_id', '=', 'pegawai.id')
-                        ->where('t.tanggal', $date);
+                        ->where('t.tanggal', $date)
+                        ->whereIn('t.jenis_transaksi', ['cash', 'transfer']);
                 })
                 ->leftJoin('transaksi_detail as td', 'td.transaksi_id', '=', 't.id')
-                ->leftJoin('donatur as d', function ($join) use ($date) {
-                    $join->on('d.pegawai_id', '=', 'pegawai.id');
-                })
+                ->leftJoin('donatur as d', 'd.id', '=', 't.donatur_id')
                 ->whereExists(function ($q) {
                     $q->select(DB::raw(1))
                         ->from('users as u')
@@ -291,16 +290,14 @@ class DashboardController extends Controller
             $bawahanIds[] = $sup->id;
 
             for ($m = 1; $m <= 12; $m++) {
-                $data = Donatur::leftJoin('transaksi as t', function ($join) use ($m, $year) {
-                        $join->on('donatur.id', '=', 't.donatur_id')
-                            ->whereMonth('t.tanggal', $m)
-                            ->whereYear('t.tanggal', $year)
-                            ->whereIn('t.jenis_transaksi', ['cash', 'transfer']);
-                    })
-                    ->leftJoin('transaksi_detail as td', 't.id', '=', 'td.transaksi_id')
-                    ->whereIn('donatur.pegawai_id', $bawahanIds)
+                $data = Transaksi::join('donatur', 'donatur.id', '=', 'transaksi.donatur_id')
+                    ->leftJoin('transaksi_detail as td', 'transaksi.id', '=', 'td.transaksi_id')
+                    ->whereIn('transaksi.pegawai_id', $bawahanIds)
+                    ->whereMonth('transaksi.tanggal', $m)
+                    ->whereYear('transaksi.tanggal', $year)
+                    ->whereIn('transaksi.jenis_transaksi', ['cash', 'transfer'])
                     ->select([
-                        DB::raw('COUNT(DISTINCT donatur.id) as jumlah_nasabah'),
+                        DB::raw('COUNT(DISTINCT transaksi.donatur_id) as jumlah_nasabah'),
                         DB::raw('COALESCE(SUM(td.nominal_donasi), 0) as nominal'),
                     ])
                     ->first();
@@ -340,16 +337,14 @@ class DashboardController extends Controller
 
         foreach ($penghimpun as $ph) {
             for ($m = 1; $m <= 12; $m++) {
-                $data = Donatur::leftJoin('transaksi as t', function ($join) use ($m, $year) {
-                        $join->on('donatur.id', '=', 't.donatur_id')
-                            ->whereMonth('t.tanggal', $m)
-                            ->whereYear('t.tanggal', $year)
-                            ->whereIn('t.jenis_transaksi', ['cash', 'transfer']);
-                    })
-                    ->leftJoin('transaksi_detail as td', 't.id', '=', 'td.transaksi_id')
+                $data = Transaksi::join('donatur', 'donatur.id', '=', 'transaksi.donatur_id')
+                    ->leftJoin('transaksi_detail as td', 'transaksi.id', '=', 'td.transaksi_id')
                     ->where('donatur.pegawai_id', $ph->id)
+                    ->whereMonth('transaksi.tanggal', $m)
+                    ->whereYear('transaksi.tanggal', $year)
+                    ->whereIn('transaksi.jenis_transaksi', ['cash', 'transfer'])
                     ->select([
-                        DB::raw('COUNT(DISTINCT donatur.id) as jumlah_nasabah'),
+                        DB::raw('COUNT(DISTINCT transaksi.donatur_id) as jumlah_nasabah'),
                         DB::raw('COALESCE(SUM(td.nominal_donasi), 0) as nominal'),
                     ])
                     ->first();

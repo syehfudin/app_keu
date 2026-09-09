@@ -5,19 +5,33 @@
 @section('content')
 <div class="container-fluid">
     <style>
-        .table-freeze-wrapper{max-height:500px;overflow:auto;}
-        .table-freeze{margin:0;}
-        .table-freeze th,.table-freeze td{white-space:nowrap;font-size:12px;}
-        .table-freeze th:nth-child(1),.table-freeze td:nth-child(1){position:sticky;left:0;min-width:40px;background:#f8f9fa;z-index:3;}
-        .table-freeze th:nth-child(2),.table-freeze td:nth-child(2){position:sticky;left:40px;min-width:140px;background:#f8f9fa;z-index:2;border-right:2px solid #dee2e6;}
-        .table-freeze th:nth-child(3),.table-freeze td:nth-child(3){position:sticky;left:180px;min-width:100px;background:#f8f9fa;z-index:2;border-right:2px solid #dee2e6;}
-        .table-freeze thead th{position:sticky;top:0;background:#f8f9fa;z-index:4;}
+        .table-freeze-wrapper{max-height:500px;overflow:auto;position:relative;}
+        .table-freeze{margin:0;border-collapse:separate;border-spacing:0;}
+        .table-freeze th,.table-freeze td{white-space:nowrap;font-size:11px;padding:4px 6px;}
+        /* Kolom 1: No - freeze kiri */
+        .table-freeze th:nth-child(1),.table-freeze td:nth-child(1){position:sticky;left:0;min-width:35px;max-width:35px;background:#f8f9fa;z-index:6;}
+        /* Kolom 2: Nama - freeze kiri */
+        .table-freeze th:nth-child(2),.table-freeze td:nth-child(2){position:sticky;left:35px;min-width:130px;max-width:130px;background:#f8f9fa;z-index:5;border-right:2px solid #dee2e6;overflow:hidden;text-overflow:ellipsis;}
+        /* Kolom 3: Nasabah Terdaftar - freeze kiri */
+        .table-freeze th:nth-child(3),.table-freeze td:nth-child(3){position:sticky;left:165px;min-width:70px;max-width:70px;background:#f8f9fa;z-index:5;border-right:2px solid #dee2e6;}
+        /* Kolom bulan: Nsb Tunai & Nominal - lebar sempit */
+        .table-freeze th:nth-child(n+4),.table-freeze td:nth-child(n+4){min-width:65px;max-width:75px;}
+        /* Freeze baris header row 1 (nama bulan) - sticky top:0 */
+        .table-freeze thead tr:first-child th{position:sticky;top:0;z-index:4;background:#f8f9fa;}
+        /* Freeze baris header row 2 (Nsb Tunai/Nominal) - sticky top: row1 height */
+        .table-freeze thead tr:nth-child(2) th{position:sticky;top:28px;z-index:4;background:#f8f9fa;}
+        /* Corner cells (frozen both axes) - highest z-index */
         .table-freeze thead tr:first-child th:nth-child(1),
         .table-freeze thead tr:first-child th:nth-child(2),
-        .table-freeze thead tr:first-child th:nth-child(3){z-index:5;}
+        .table-freeze thead tr:first-child th:nth-child(3){z-index:8;}
         .table-freeze thead tr:nth-child(2) th:nth-child(1),
         .table-freeze thead tr:nth-child(2) th:nth-child(2),
-        .table-freeze thead tr:nth-child(2) th:nth-child(3){z-index:5;}
+        .table-freeze thead tr:nth-child(2) th:nth-child(3){z-index:8;}
+        /* Tfoot total row - sticky bottom */
+        .table-freeze tfoot tr td{position:sticky;bottom:0;background:#f8f9fa;z-index:4;}
+        .table-freeze tfoot tr td:nth-child(1),
+        .table-freeze tfoot tr td:nth-child(2),
+        .table-freeze tfoot tr td:nth-child(3){z-index:6;}
     </style>
 
     <div class="row mb-3">

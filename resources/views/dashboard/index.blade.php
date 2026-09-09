@@ -234,8 +234,75 @@
                                         <td class="text-right" style="font-size:11px;">Rp {{ number_format($yearlySupervisor->sum('m'.$m.'_nominal'), 0, ',', '.') }}</td>
                                     @endfor
                                 </tr>
+                                <tr style="color:#28a745;">
+                                    <td colspan="3" class="text-right">TOTAL SUDAH SETOR</td>
+                                    @for($m=1;$m<=12;$m++)
+                                        <td></td>
+                                        <td class="text-right" style="font-size:11px;">Rp {{ number_format($yearlySupervisor->sum('m'.$m.'_sudah'), 0, ',', '.') }}</td>
+                                    @endfor
+                                </tr>
+                                <tr style="color:#dc3545;">
+                                    <td colspan="3" class="text-right">TOTAL BELUM SETOR</td>
+                                    @for($m=1;$m<=12;$m++)
+                                        <td></td>
+                                        <td class="text-right" style="font-size:11px;">Rp {{ number_format($yearlySupervisor->sum('m'.$m.'_belum'), 0, ',', '.') }}</td>
+                                    @endfor
+                                </tr>
                             </tfoot>
                             @endif
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ROW 5: Report Setoran per Supervisor per Bulan (admin/manager only) --}}
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card card-info">
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-exchange-alt"></i> Report Setoran per Supervisor per Bulan - {{ $selectedYear }}</h3><div class="card-tools"><button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button></div></div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" class="text-center" style="width:40px;">No</th>
+                                    <th rowspan="2" style="width:80px;">Bulan</th>
+                                    <th rowspan="2" style="width:150px;">Nama Supervisor</th>
+                                    <th class="text-center" style="width:80px;">Nasabah Tunai</th>
+                                    <th class="text-right" style="width:100px;">Sudah Setor</th>
+                                    <th class="text-right" style="width:100px;">Belum Setor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php $no = 0; @endphp
+                                @for($m=1;$m<=12;$m++)
+                                    @php
+                                        $bulanName = ['1'=>'Januari','2'=>'Februari','3'=>'Maret','4'=>'April','5'=>'Mei','6'=>'Juni','7'=>'Juli','8'=>'Agustus','9'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'];
+                                        $hasData = false;
+                                        foreach($yearlySupervisor as $sup) {
+                                            if ($sup->{'m'.$m.'_nasabah'} > 0 || $sup->{'m'.$m.'_nominal'} > 0) { $hasData = true; break; }
+                                        }
+                                    @endphp
+                                    @if($hasData)
+                                    @foreach($yearlySupervisor as $sup)
+                                        @if($sup->{'m'.$m.'_nasabah'} > 0 || $sup->{'m'.$m.'_nominal'} > 0)
+                                        @php $no++; @endphp
+                                        <tr>
+                                            <td class="text-center">{{ $no }}</td>
+                                            <td>{{ $bulanName[$m] }}</td>
+                                            <td>{{ $sup->nama_supervisor }}</td>
+                                            <td class="text-center">{{ $sup->{'m'.$m.'_nasabah'} }}</td>
+                                            <td class="text-right" style="font-size:11px;color:#28a745;">Rp {{ number_format($sup->{'m'.$m.'_sudah'}, 0, ',', '.') }}</td>
+                                            <td class="text-right" style="font-size:11px;color:#dc3545;">Rp {{ number_format($sup->{'m'.$m.'_belum'}, 0, ',', '.') }}</td>
+                                        </tr>
+                                        @endif
+                                    @endforeach
+                                    @endif
+                                @endfor
+                                @if($no == 0)<tr><td colspan="6" class="text-center text-muted">Tidak ada data</td></tr>@endif
+                            </tbody>
                         </table>
                     </div>
                 </div>

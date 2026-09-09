@@ -292,6 +292,7 @@ class DashboardController extends Controller
             for ($m = 1; $m <= 12; $m++) {
                 $data = Transaksi::join('donatur', 'donatur.id', '=', 'transaksi.donatur_id')
                     ->leftJoin('transaksi_detail as td', 'transaksi.id', '=', 'td.transaksi_id')
+                    ->leftJoin('setoran_detail as sd', 'sd.transaksi_id', '=', 'transaksi.id')
                     ->whereIn('transaksi.pegawai_id', $bawahanIds)
                     ->whereMonth('transaksi.tanggal', $m)
                     ->whereYear('transaksi.tanggal', $year)
@@ -299,11 +300,15 @@ class DashboardController extends Controller
                     ->select([
                         DB::raw('COUNT(DISTINCT transaksi.donatur_id) as jumlah_nasabah'),
                         DB::raw('COALESCE(SUM(td.nominal_donasi), 0) as nominal'),
+                        DB::raw("COALESCE(SUM(CASE WHEN transaksi.jenis_transaksi = 'transfer' THEN td.nominal_donasi ELSE 0 END), 0) + COALESCE(SUM(CASE WHEN transaksi.jenis_transaksi = 'cash' AND sd.id IS NOT NULL THEN td.nominal_donasi ELSE 0 END), 0) as sudah_setor"),
+                        DB::raw("COALESCE(SUM(CASE WHEN transaksi.jenis_transaksi = 'cash' AND sd.id IS NULL THEN td.nominal_donasi ELSE 0 END), 0) as belum_setor"),
                     ])
                     ->first();
 
                 $sup->{'m' . $m . '_nasabah'} = $data->jumlah_nasabah ?? 0;
                 $sup->{'m' . $m . '_nominal'} = $data->nominal ?? 0;
+                $sup->{'m' . $m . '_sudah'} = $data->sudah_setor ?? 0;
+                $sup->{'m' . $m . '_belum'} = $data->belum_setor ?? 0;
             }
         }
 

@@ -162,6 +162,17 @@
                                 @endforeach
                                 @if($yearlyPenghimpun->isEmpty())<tr><td colspan="29" class="text-center text-muted">Tidak ada data</td></tr>@endif
                             </tbody>
+                            @if($yearlyPenghimpun->isNotEmpty())
+                            <tfoot style="font-weight:bold;background:#f8f9fa;">
+                                <tr>
+                                    <td colspan="3" class="text-right">TOTAL</td>
+                                    @for($m=1;$m<=12;$m++)
+                                        <td class="text-center">{{ $yearlyPenghimpun->sum('m'.$m.'_nasabah') }}</td>
+                                        <td class="text-right" style="font-size:11px;">Rp {{ number_format($yearlyPenghimpun->sum('m'.$m.'_nominal'), 0, ',', '.') }}</td>
+                                    @endfor
+                                </tr>
+                            </tfoot>
+                            @endif
                         </table>
                     </div>
                 </div>
@@ -203,6 +214,17 @@
                                 @endforeach
                                 @if($yearlySupervisor->isEmpty())<tr><td colspan="29" class="text-center text-muted">Tidak ada data</td></tr>@endif
                             </tbody>
+                            @if($yearlySupervisor->isNotEmpty())
+                            <tfoot style="font-weight:bold;background:#f8f9fa;">
+                                <tr>
+                                    <td colspan="3" class="text-right">TOTAL</td>
+                                    @for($m=1;$m<=12;$m++)
+                                        <td class="text-center">{{ $yearlySupervisor->sum('m'.$m.'_nasabah') }}</td>
+                                        <td class="text-right" style="font-size:11px;">Rp {{ number_format($yearlySupervisor->sum('m'.$m.'_nominal'), 0, ',', '.') }}</td>
+                                    @endfor
+                                </tr>
+                            </tfoot>
+                            @endif
                         </table>
                     </div>
                 </div>

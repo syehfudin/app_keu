@@ -41,7 +41,7 @@
     </div>
 
     <div class="row mb-3">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="small-box bg-info">
                 <div class="inner">
                     <h3>{{ number_format($totalTransaksi, 0, ',', '.') }}</h3>
@@ -50,7 +50,16 @@
                 <i class="fas fa-receipt" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
+            <div class="small-box bg-primary">
+                <div class="inner">
+                    <h3>Rp {{ number_format($totalSemua, 0, ',', '.') }}</h3>
+                    <p>Total Nominal - {{ $bulanList[$bulan] }} {{ $tahun }}</p>
+                </div>
+                <i class="fas fa-money-bill-wave" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
             <div class="small-box bg-success">
                 <div class="inner">
                     <h3>Rp {{ number_format($totalSudahSetor, 0, ',', '.') }}</h3>
@@ -59,7 +68,7 @@
                 <i class="fas fa-check-circle" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="small-box bg-danger">
                 <div class="inner">
                     <h3>Rp {{ number_format($totalBelumSetor, 0, ',', '.') }}</h3>

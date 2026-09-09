@@ -145,7 +145,7 @@
                                     <th colspan="2" class="text-center">Jan</th><th colspan="2" class="text-center">Feb</th><th colspan="2" class="text-center">Mar</th><th colspan="2" class="text-center">Apr</th><th colspan="2" class="text-center">Mei</th><th colspan="2" class="text-center">Jun</th><th colspan="2" class="text-center">Jul</th><th colspan="2" class="text-center">Agu</th><th colspan="2" class="text-center">Sep</th><th colspan="2" class="text-center">Okt</th><th colspan="2" class="text-center">Nov</th><th colspan="2" class="text-center">Des</th>
                                 </tr>
                                 <tr>
-                                    @for($m=1;$m<=12;$m++)<th class="text-center">Nsb</th><th class="text-right">Nominal</th>@endfor
+                                    @for($m=1;$m<=12;$m++)<th class="text-center">Nsb Tunai</th><th class="text-right">Nominal</th>@endfor
                                 </tr>
                             </thead>
                             <tbody>
@@ -186,7 +186,7 @@
                                     <th colspan="2" class="text-center">Jan</th><th colspan="2" class="text-center">Feb</th><th colspan="2" class="text-center">Mar</th><th colspan="2" class="text-center">Apr</th><th colspan="2" class="text-center">Mei</th><th colspan="2" class="text-center">Jun</th><th colspan="2" class="text-center">Jul</th><th colspan="2" class="text-center">Agu</th><th colspan="2" class="text-center">Sep</th><th colspan="2" class="text-center">Okt</th><th colspan="2" class="text-center">Nov</th><th colspan="2" class="text-center">Des</th>
                                 </tr>
                                 <tr>
-                                    @for($m=1;$m<=12;$m++)<th class="text-center">Nsb</th><th class="text-right">Nominal</th>@endfor
+                                    @for($m=1;$m<=12;$m++)<th class="text-center">Nsb Tunai</th><th class="text-right">Nominal</th>@endfor
                                 </tr>
                             </thead>
                             <tbody>

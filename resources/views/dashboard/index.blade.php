@@ -263,46 +263,40 @@
             <div class="card card-info">
                 <div class="card-header"><h3 class="card-title"><i class="fas fa-exchange-alt"></i> Report Setoran per Supervisor per Bulan - {{ $selectedYear }}</h3><div class="card-tools"><button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button></div></div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-sm mb-0">
+                    @php
+                        $bulanShort = [1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',5=>'Mei',6=>'Jun',7=>'Jul',8=>'Agu',9=>'Sep',10=>'Okt',11=>'Nov',12=>'Des'];
+                    @endphp
+                    <div class="table-freeze-wrapper" style="max-height:600px;">
+                        <table class="table table-bordered table-sm mb-0 table-freeze" style="font-size:11px;">
                             <thead>
                                 <tr>
-                                    <th rowspan="2" class="text-center" style="width:40px;">No</th>
-                                    <th rowspan="2" style="width:80px;">Bulan</th>
-                                    <th rowspan="2" style="width:150px;">Nama Supervisor</th>
-                                    <th class="text-center" style="width:80px;">Nasabah Tunai</th>
-                                    <th class="text-right" style="width:100px;">Sudah Setor</th>
-                                    <th class="text-right" style="width:100px;">Belum Setor</th>
+                                    <th rowspan="2" class="text-center" style="min-width:35px;">No</th>
+                                    <th rowspan="2" style="min-width:80px;">Bulan</th>
+                                    <th rowspan="2" style="min-width:150px;">Nama Supervisor</th>
+                                    <th rowspan="2" style="min-width:70px;" class="text-center">Status</th>
+                                    @for($m=1;$m<=12;$m++)<th colspan="2" class="text-center" style="min-width:130px;">{{ $bulanShort[$m] }}</th>@endfor
+                                    <th colspan="2" class="text-center" style="min-width:130px;background:#e9ecef;">TOTAL</th>
+                                </tr>
+                                <tr>
+                                    @for($m=1;$m<=12;$m++)<th class="text-right" style="min-width:65px;color:#28a745;">Sudah</th><th class="text-right" style="min-width:65px;color:#dc3545;">Belum</th>@endfor
+                                    <th class="text-right" style="min-width:65px;color:#28a745;background:#e9ecef;">Sudah</th>
+                                    <th class="text-right" style="min-width:65px;color:#dc3545;background:#e9ecef;">Belum</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @php $no = 0; @endphp
-                                @for($m=1;$m<=12;$m++)
-                                    @php
-                                        $bulanName = ['1'=>'Januari','2'=>'Februari','3'=>'Maret','4'=>'April','5'=>'Mei','6'=>'Juni','7'=>'Juli','8'=>'Agustus','9'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'];
-                                        $hasData = false;
-                                        foreach($yearlySupervisor as $sup) {
-                                            if ($sup->{'m'.$m.'_nasabah'} > 0 || $sup->{'m'.$m.'_nominal'} > 0) { $hasData = true; break; }
-                                        }
-                                    @endphp
-                                    @if($hasData)
-                                    @foreach($yearlySupervisor as $sup)
-                                        @if($sup->{'m'.$m.'_nasabah'} > 0 || $sup->{'m'.$m.'_nominal'} > 0)
-                                        @php $no++; @endphp
-                                        <tr>
-                                            <td class="text-center">{{ $no }}</td>
-                                            <td>{{ $bulanName[$m] }}</td>
-                                            <td>{{ $sup->nama_supervisor }}</td>
-                                            <td class="text-center">{{ $sup->{'m'.$m.'_nasabah'} }}</td>
-                                            <td class="text-right" style="font-size:11px;color:#28a745;">Rp {{ number_format($sup->{'m'.$m.'_sudah'}, 0, ',', '.') }}</td>
-                                            <td class="text-right" style="font-size:11px;color:#dc3545;">Rp {{ number_format($sup->{'m'.$m.'_belum'}, 0, ',', '.') }}</td>
-                                        </tr>
-                                        @endif
-                                    @endforeach
-                                    @endif
-                                @endfor
-                                @if($no == 0)<tr><td colspan="6" class="text-center text-muted">Tidak ada data</td></tr>@endif
+                                @foreach($yearlySupervisor as $sup)
+                                    @php $no++; $totalSudah=0; $totalBelum=0; for($m=1;$m<=12;$m++){$totalSudah+=$sup->{'m'.$m.'_sudah'};$totalBelum+=$sup->{'m'.$m.'_belum'};} @endphp
+                                    <tr style="font-weight:bold;background:#f0f7ff;"><td class="text-center">{{ $no }}</td><td colspan="2">{{ $sup->nama_supervisor }}</td><td class="text-center"><i class="fas fa-user-tie"></i></td>@for($m=1;$m<=12;$m++)<td colspan="2" style="background:#e9ecef;"></td>@endfor<td colspan="2" style="background:#e9ecef;"></td></tr>
+                                    <tr><td></td><td></td><td></td><td class="text-center" style="color:#28a745;font-size:10px;">Sudah</td>@for($m=1;$m<=12;$m++)<td class="text-right">{{ $sup->{'m'.$m.'_sudah'}>0?number_format($sup->{'m'.$m.'_sudah'},0,',','.'):'-' }}</td><td></td>@endfor<td class="text-right" style="background:#e9ecef;font-weight:bold;">{{ number_format($totalSudah,0,',','.') }}</td><td style="background:#e9ecef;"></td></tr>
+                                    <tr><td></td><td></td><td></td><td class="text-center" style="color:#dc3545;font-size:10px;">Belum</td>@for($m=1;$m<=12;$m++)<td></td><td class="text-right">{{ $sup->{'m'.$m.'_belum'}>0?number_format($sup->{'m'.$m.'_belum'},0,',','.'):'-' }}</td>@endfor<td style="background:#e9ecef;"></td><td class="text-right" style="background:#e9ecef;font-weight:bold;">{{ number_format($totalBelum,0,',','.') }}</td></tr>
+                                @endforeach
+                                @if($yearlySupervisor->isEmpty())<tr><td colspan="31" class="text-center text-muted">Tidak ada data</td></tr>@endif
                             </tbody>
+                            <tfoot style="font-weight:bold;background:#f8f9fa;">
+                                <tr style="color:#28a745;"><td colspan="4" class="text-right">TOTAL SUDAH SETOR</td>@for($m=1;$m<=12;$m++)<td class="text-right">{{ number_format($yearlySupervisor->sum('m'.$m.'_sudah'),0,',','.') }}</td><td></td>@endfor<td class="text-right">{{ number_format(collect(range(1,12))->sum(function($m)use($yearlySupervisor){return $yearlySupervisor->sum('m'.$m.'_sudah');}),0,',','.') }}</td><td></td></tr>
+                                <tr style="color:#dc3545;"><td colspan="4" class="text-right">TOTAL BELUM SETOR</td>@for($m=1;$m<=12;$m++)<td></td><td class="text-right">{{ number_format($yearlySupervisor->sum('m'.$m.'_belum'),0,',','.') }}</td>@endfor<td></td><td class="text-right">{{ number_format(collect(range(1,12))->sum(function($m)use($yearlySupervisor){return $yearlySupervisor->sum('m'.$m.'_belum');}),0,',','.') }}</td></tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>

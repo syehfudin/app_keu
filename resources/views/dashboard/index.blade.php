@@ -4,7 +4,6 @@
 @endpush
 @section('content')
 <div class="container-fluid">
-    <h2 class="mb-3">{{ $title }}</h2>
     <style>
         .table-freeze-wrapper{max-height:500px;overflow:auto;}
         .table-freeze{margin:0;}

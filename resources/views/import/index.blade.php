@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @section('content')
 <div class="container-fluid">
-    <h2 class="mb-3">{{ $title }}</h2>
 
     @if(session('success'))
     <div class="alert alert-success alert-dismissible">

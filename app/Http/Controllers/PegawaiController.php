@@ -130,6 +130,7 @@ class PegawaiController extends Controller
         $data_pegawai['nama'] = $request->input('nama');
         $data_pegawai['nip'] = $request->input('nip');
         $data_pegawai['alamat'] = $request->input('alamat');
+        $data_pegawai['jabatan'] = $request->input('jabatan') ?: null;
         $data_pegawai['dafault'] = $default;
 
         $pegawai = Pegawai::create($data_pegawai);

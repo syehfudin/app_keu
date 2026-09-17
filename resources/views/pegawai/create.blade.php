@@ -28,6 +28,18 @@
                             </div>
                             <div class="mb-3">
                                 <label class="fs-6 fw-bold mb-2">Alamat</label>
+                                <div class="mb-3">
+                                    <label class="fs-6 fw-bold mb-2">Jabatan</label>
+                                    {!! Form::select('jabatan', [
+                                        '' => '- Pilih Jabatan (opsional) -',
+                                        'Penghimpun' => 'Penghimpun',
+                                        'Supervisor' => 'Supervisor',
+                                        'Manager' => 'Manager',
+                                        'General Manager' => 'General Manager',
+                                        'DirOps' => 'DirOps',
+                                        'Direktur' => 'Direktur',
+                                    ], @$user->pegawai->jabatan, ['class' => 'form-control', @$show]) !!}
+                                </div>
                                 {!! Form::textarea('alamat', @$user->pegawai->alamat, [
                                     'placeholder' => 'Masukan alamat penghimpun',
                                     'class' => 'form-control',

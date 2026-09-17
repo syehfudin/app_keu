@@ -49,7 +49,10 @@ class TransaksiController extends Controller
         $pegawai_id = Auth::user()->pegawai_id;
         $accessibleIds = $this->getAccessiblePegawaiIds();
 
-        if ($role == 'penghimpun') {
+        if (in_array($role, ['manager', 'gm', 'general manager', 'direktur', 'dirops', 'dir. ops', 'direktur ops', 'direktur operasional'])) {
+            // Manager/GM/Direktur/DirOps: scope read = subtree wilayahnya
+            $penghimpunList = Pegawai::whereIn('id', $accessibleIds)->orderBy('nama', 'asc')->get(['id', 'nama']);
+        } elseif ($role == 'penghimpun') {
             $penghimpunList = Pegawai::where('id', $pegawai_id)->get(['id', 'nama']);
         } elseif ($role == 'supervisor') {
             // Bawahan supervisor + dirinya sendiri
@@ -172,6 +175,12 @@ class TransaksiController extends Controller
             // tidak ada AJAX). Perilaku tidak berubah.
             $donatur = Donatur::where('pegawai_id', $pegawai_id)->orderBy('nama', 'asc')->get();
             $relawan = Pegawai::where('id', $pegawai_id)->get();
+        } elseif (in_array($role, ['manager', 'gm', 'general manager', 'direktur', 'dirops', 'dir. ops', 'direktur ops', 'direktur operasional'])) {
+            // Manager/GM/Direktur/DirOps: input HANYA untuk nasabah milik dirinya
+            // (kebijakan input-scope). Dropdown penghimpun terkunci ke diri sendiri,
+            // donatur miliknya di pre-load seperti penghimpun.
+            $donatur = Donatur::where('pegawai_id', $pegawai_id)->orderBy('nama', 'asc')->get();
+            $relawan = Pegawai::where('id', $pegawai_id)->get();
         } elseif ($role == 'supervisor') {
             // Supervisor: donatur awal kosong, diisi via AJAX setelah penghimpun
             // (bawahan supervisor) dipilih di dropdown.
@@ -258,12 +267,41 @@ class TransaksiController extends Controller
 
         request()->validate($validation, $message);
 
-        DB::transaction(function () use ($request, $checkDonatur, $jenis_transaksi, $googleService) {
-            if (strtolower(Auth::user()->roles[0]->name) == 'admin') {
-                $pegawai_id = $request->input('pegawai_id');
-            } else {
-                $pegawai_id = Auth::User()->pegawai_id;
+        // ===== INPUT-SCOPE ENFORCEMENT (server-side) =====
+        // input-scope: supervisor = diri + subtree bawahan; admin = semua;
+        // penghimpun/manager/gm/direktur/dirops = diri sendiri saja.
+        $inputScope = $this->getInputScopeIds();
+        $requestedPegawaiId = $request->input('pegawai_id');
+        $selfPegawaiId = Auth::User()->pegawai_id;
+        if ($inputScope === null) {
+            $pegawai_id = $requestedPegawaiId ?: $selfPegawaiId; // admin: bebas
+        } else {
+            $pegawai_id = (int) ($requestedPegawaiId ?: $selfPegawaiId);
+            if (! in_array($pegawai_id, $inputScope, true)) {
+                // Di luar input-scope: fallback ke diri sendiri (tidak fatal,
+                // mencegah input atas nama pegawai di luar wewenang).
+                $pegawai_id = $selfPegawaiId;
             }
+        }
+
+        // Validasi konsistensi donatur: untuk input non-admin, donatur_id
+        // harus milik pegawai_id yang dipakai (donatur.pegawai_id).
+        if ($pegawai_id !== $selfPegawaiId || $inputScope !== null) {
+            $reqDonaturId = $request->input('donatur_id');
+            if ($reqDonaturId) {
+                $donaturPegawai = Donatur::where('id', $reqDonaturId)->value('pegawai_id');
+                if ($donaturPegawai === null || (int) $donaturPegawai !== (int) $pegawai_id) {
+                    // Donatur tidak milik pegawai terpilih: cegah input donatur lama
+                    // milik pegawai lain — transaksi dengan nasabah lama ditolak.
+                    return redirect()
+                        ->route('transaksi.create')
+                        ->withInput()
+                        ->with('error', 'Nasabah tidak sesuai dengan penghimpun yang dipilih. Pilih nasabah milik penghimpun tersebut atau daftarkan sebagai nasabah baru.');
+                }
+            }
+        }
+
+        DB::transaction(function () use ($request, $checkDonatur, $jenis_transaksi, $googleService, $pegawai_id) {
             if ($checkDonatur == 'baru') {
                 $dataDonatur['pegawai_id'] = $pegawai_id;
                 $dataDonatur['nama'] = $request->input('nama');

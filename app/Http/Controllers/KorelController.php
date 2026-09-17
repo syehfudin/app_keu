@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 class KorelController extends Controller
 {
+    use \App\Traits\HasHierarchy;
     public function __construct()
     {
         $this->middleware('permission:korel-list|korel-create|korel-edit|korel-delete', ['only' => ['index', 'show', 'indexData']]);
@@ -112,11 +113,24 @@ class KorelController extends Controller
         DB::transaction(function () use ($request) {
             $kepala = $request->input('kepala');
             $bawahan = $request->input('bawahan');
+
+            // ===== CYCLE GUARD =====
+            // Tolak (skip) bawahan yang: self-loop, relasi sudah ada,
+            // atau membuat siklus (kepala ada di subtree bawahan).
+            $skipped = 0;
             foreach ($bawahan as $bawahan_id) {
-                $data = [];
-                $data['kepala_id'] = $kepala;
-                $data['bawahan_id'] = $bawahan_id;
-                Korel::create($data);
+                if ($this->wouldCreateCycle($kepala, $bawahan_id)) {
+                    $skipped++;
+                    continue;
+                }
+                if (Korel::where('kepala_id', $kepala)->where('bawahan_id', $bawahan_id)->exists()) {
+                    $skipped++;
+                    continue;
+                }
+                Korel::create([
+                    'kepala_id' => $kepala,
+                    'bawahan_id' => $bawahan_id,
+                ]);
             }
         });
 

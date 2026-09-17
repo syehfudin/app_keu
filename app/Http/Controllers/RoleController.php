@@ -32,11 +32,25 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        $roles = Role::orderBy('id', 'DESC')->paginate(5);
+        $roleOrder = ['Admin', 'Direktur', 'DirOps', 'General Manager', 'Manager', 'Supervisor', 'Penghimpun'];
+        $all = Role::get()->sortBy(function ($role) use ($roleOrder) {
+            $idx = array_search($role->name, $roleOrder);
+            return $idx === false ? 999 : $idx;
+        })->values();
+
+        $page = request()->input('page', 1) ?: 1;
+        $perPage = 15;
+        $roles = new \Illuminate\Pagination\LengthAwarePaginator(
+            $all->forPage($page, $perPage)->values(),
+            $all->count(),
+            $perPage,
+            (int) $page,
+            ['path' => request()->url()]
+        );
         $title = $this->title;
 
         return view('roles.index', compact('title', 'roles'))
-            ->with('i', ($request->input('page', 1) - 1) * 5);
+            ->with('i', ($request->input('page', 1) - 1) * 15);
     }
 
     public function indexData()

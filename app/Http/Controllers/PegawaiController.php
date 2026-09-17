@@ -38,8 +38,10 @@ class PegawaiController extends Controller
     public function index()
     {
         $title = $this->title;
+        $roleOrder = ['Admin', 'Direktur', 'DirOps', 'General Manager', 'Manager', 'Supervisor', 'Penghimpun'];
+        $roleList = $roleOrder;
 
-        return view('pegawai.index', compact('title'));
+        return view('pegawai.index', compact('title', 'roleList'));
     }
 
     /**
@@ -60,6 +62,15 @@ class PegawaiController extends Controller
                 'users.username',
                 'r.name as role',
             ]);
+
+        // ===== Filter: Role & Nama Penghimpun =====
+        if ($request->filled('filter_role')) {
+            $query->where('r.name', $request->input('filter_role'));
+        }
+        if ($request->filled('filter_nama')) {
+            $nama = $request->input('filter_nama');
+            $query->where('p.nama', 'ILIKE', '%'.$nama.'%');
+        }
 
         if (in_array($role, ['admin', 'manager'])) {
             $data = $query->get();
@@ -93,7 +104,8 @@ class PegawaiController extends Controller
         $redirectUrl = $this->redirectUrl;
         $title = 'Tambah '.$this->title;
         $action = route('pegawai.store');
-        $roles = Role::pluck('name', 'name')->all();
+        $roleOrder = ['Direktur', 'DirOps', 'General Manager', 'Manager', 'Supervisor', 'Penghimpun'];
+        $roles = collect($roleOrder)->combine($roleOrder)->all();
 
         return view('pegawai.create', compact('title', 'redirectUrl', 'roles', 'action'));
     }
@@ -159,7 +171,8 @@ class PegawaiController extends Controller
         $show = 'disabled';
         $title = 'Show '.$this->title;
         $action = '#';
-        $roles = Role::pluck('name', 'name')->all();
+        $roleOrder = ['Admin', 'Direktur', 'DirOps', 'General Manager', 'Manager', 'Supervisor', 'Penghimpun'];
+        $roles = collect($roleOrder)->combine($roleOrder)->all();
         $userRole = $user->roles->pluck('name', 'name')->all();
 
         return view('pegawai.create', compact('title', 'redirectUrl', 'action', 'user', 'roles', 'userRole', 'show'));
@@ -177,7 +190,8 @@ class PegawaiController extends Controller
         $redirectUrl = $this->redirectUrl;
         $title = 'Ubah '.$this->title;
         $action = route('pegawai.update', $id);
-        $roles = Role::pluck('name', 'name')->all();
+        $roleOrder = ['Direktur', 'DirOps', 'General Manager', 'Manager', 'Supervisor', 'Penghimpun'];
+        $roles = collect($roleOrder)->combine($roleOrder)->all();
         $userRole = $user->roles->pluck('name', 'name')->all();
 
         return view('pegawai.create', compact('title', 'redirectUrl', 'action', 'user', 'roles', 'userRole'));

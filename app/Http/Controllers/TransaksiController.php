@@ -247,16 +247,18 @@ class TransaksiController extends Controller
      */
     public function store(Request $request)
     {
+        // ===== Nasabah Baru dihilangkan: hanya Nasabah Lama =====
         $checkDonatur = $request->input('status');
         $validation = [];
         $message = [];
         if ($checkDonatur == 'baru') {
-            $validation['nama'] = 'required';
-            $message['nama.required'] = 'Nama donatur wajib diisi';
-        } else {
-            $validation['donatur_id'] = 'required';
-            $message['donatur_id.required'] = 'Nama donatur wajib dipilih';
+            return redirect()
+                ->route('transaksi.create')
+                ->withInput()
+                ->with('error', 'Input nasabah baru tidak tersedia. Pilih nasabah lama yang terdaftar.');
         }
+        $validation['donatur_id'] = 'required';
+        $message['donatur_id.required'] = 'Nama donatur wajib dipilih';
         $jenis_transaksi = $request->input('jenis_transaksi');
         if (in_array($jenis_transaksi, ['transfer', 'rek_ulama'])) {
             $validation['image'] = 'required';

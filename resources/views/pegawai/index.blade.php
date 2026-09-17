@@ -11,6 +11,38 @@
         <a class="btn btn-success" href="{{ route('pegawai.create') }}"> Tambah Penghimpun</a>
         @endcan
     </div>
+
+    {{-- ===== Filter: Role & Nama Penghimpun ===== --}}
+    <div class="row">
+        <div class="col-12 col-lg-12">
+            <div class="card card-outline card-info">
+                <div class="card-body">
+                    <form method="GET" id="form-filter-pegawai" onsubmit="applyPegawaiFilter(); return false;">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold mb-1">Role</label>
+                                <select class="form-control" id="filter_role">
+                                    <option value="">- Semua Role -</option>
+                                    @foreach($roleList as $r)
+                                        <option value="{{ $r }}">{{ $r }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold mb-1">Nama Penghimpun</label>
+                                <input type="text" class="form-control" id="filter_nama" placeholder="Cari nama penghimpun...">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetPegawaiFilter()"><i class="fas fa-redo"></i> Reset</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12 col-lg-12">
             <div class="card card-primary">
@@ -57,22 +89,36 @@
         "responsive": true, "lengthChange": false, "autoWidth": false,
         "processing": true,
         "serverSide": true,
-        "searching": true,
-        "ajax": dataUrl,
+        "searching": false,
+        "ajax": {
+            "url": dataUrl,
+            "data": function (d) {
+                d.filter_role = $("#filter_role").val() || "";
+                d.filter_nama = $("#filter_nama").val() || "";
+            }
+        },
         columns: [
-            { data: "DT_RowIndex", name: "DT_RowIndex" },
+            { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
             { data: "nip", name: "nip" },
             { data: "nama", name: "nama" },
             { data: "username", name: "username" },
-            { data: "role", name: "username" },
+            { data: "role", name: "role" },
             {
                 data: "action",
                 name: "action",
-                orderable: true,
-                searchable: true,
+                orderable: false,
+                searchable: false,
             },
         ],
     });
     table = dt.$;
+
+    let applyPegawaiFilter = () => dt.draw();
+
+    let resetPegawaiFilter = () => {
+        $("#filter_role").val('');
+        $("#filter_nama").val('');
+        dt.draw();
+    };
 </script>
 @endpush

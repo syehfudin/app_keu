@@ -51,35 +51,11 @@
                         @else
                             {!! Form::hidden('pegawai_id', $pegawai_id, ['id' => 'pegawai_id']) !!}
                         @endif
+                        {{-- Status Nasabah: UI dihilangkan (selalu 'lama') --}}
                         @if(!@$transaksi)
-                        <div class="mb-3">
-                            <label class="fs-6 fw-bold mb-2">
-                                <span class="required">Status Nasabah</span>
-                            </label>
-                            @role('Penghimpun')
-                            <input type="hidden" name="status" value="lama">
-                            <div class="form-check">
-                                <span class="form-check-label">
-                                    Nasabah Lama
-                                </span>
-                            </div>
-                            @else
-                            <label class="form-check">
-                                {!! Form::radio('status', 'baru', true, array('class' => 'form-check-input status', @$show)) !!}
-                                <span class="form-check-label">
-                                    Nasabah Baru
-                                </span>
-                            </label>
-                            <label class="form-check">
-                                {!! Form::radio('status', 'lama', false, array('class' => 'form-check-input status', @$show)) !!}
-                                <span class="form-check-label">
-                                    Nasabah Lama
-                                </span>
-                            </label>
-                            @endrole
-                        </div>
+                        <input type="hidden" name="status" value="lama">
                         @endif
-                        <div class="mb-3 donatur_lama">
+                        <div class="mb-3 ">
                             <label class="fs-6 fw-bold mb-2">Nama Nasabah</label>
                             <select class="form-control select2" name="donatur_id" id="donatur_id">
                                 <option value="">Pilih Nasabah ...</option>
@@ -92,38 +68,6 @@
                                 Pilih Penghimpun dahulu, daftar nasabah akan dimuat otomatis.
                             </small>
                             @endif
-                        </div>
-                        <div class="donatur_baru">
-                            <div class="mb-3">
-                                <label class="fs-6 fw-bold mb-2">Nama Nasabah</label>
-                                {!! Form::text('nama', null, array('placeholder' => 'Masukan nama donatur','class' => 'form-control', @$show)) !!}
-                            </div>
-                            <div class="mb-3">
-                                <label class="fs-6 fw-bold mb-2">Nomor HP Nasabah</label>
-                                {!! Form::text('no_telepon', null, array('placeholder' => 'Masukan nomor hp donatur','class' => 'form-control', @$show)) !!}
-                            </div>
-                            <div class="mb-3">
-                                <label class="fs-6 fw-bold mb-2">Alamat</label>
-                                {!! Form::textarea('alamat', null, array('placeholder' => 'Masukan alamat donatur','class' => 'form-control', 'rows' => '4', @$show)) !!}
-                            </div>
-                            <div class="mb-3">
-                                <label class="fs-6 fw-bold mb-2">Pekerjaan</label>
-                                @foreach($pekerjaan as $item)
-                                <label class="form-check">
-                                    {!! Form::radio('pekerjaan', $item->nama, false, array('class' => 'form-check-input pekerjaan', @$show)) !!}
-                                    <span class="form-check-label">
-                                        {{ $item->nama }}
-                                    </span>
-                                </label>
-                                @endforeach
-                                <label class="form-check">
-                                    {!! Form::radio('pekerjaan', 'lainnya',  false, array('class' => 'form-check-input pekerjaan', )) !!}
-                                    <span class="form-check-label">
-                                        Lainnya
-                                        {!! Form::text('lainnya', null, array('class' => 'form-control w-25 lainnya', 'disabled')) !!}
-                                    </span>
-                                </label>
-                            </div>
                         </div>
                         <h5>Program</h5>
                         @php $total_donasi = 0 @endphp
@@ -184,11 +128,6 @@
     $( "#datepicker" ).datepicker({
         dateFormat: 'dd-mm-yy'
     });
-    $(".status").on('click', function(){
-        let status = $(this).val();
-        setDonatur(status);
-    });
-
     $(".jt").on('change', function() {
         let jt = $(this).val();
         setUpload(jt);
@@ -230,29 +169,13 @@
         }
     }
 
-    let setDonatur = (status) => {
-        let donatur_baru = document.getElementsByClassName('donatur_baru');
-        let donatur_lama = document.getElementsByClassName('donatur_lama');
-        if(status == 'baru'){
-            $(".donatur_baru").attr('style', 'display:block');
-            $(".donatur_lama").attr('style', 'display:none')
-        }else{
-            $(".donatur_baru").attr('style', 'display:none');
-            $(".donatur_lama").attr('style', 'display:block')
-        }
-    }
-
     // ============================================================
     // Filter dinamis: pilih Penghimpun -> muat daftar Nasabah
-    // Hanya aktif untuk role Admin/Supervisor/Manager (non-penghimpun).
-    // Penghimpun tidak punya dropdown penghimpun (hidden field), jadi
-    // daftar nasabahnya sudah pre-loaded dari server.
     // ============================================================
     let needPegawaiSelect = {{ $needPegawaiSelect ? 'true' : 'false' }};
 
     let loadDonaturByPegawai = (pegawaiId) => {
         let $select = $("#donatur_id");
-        // Kosongkan option lama, kecuali placeholder
         $select.empty().append('<option value="">Pilih Nasabah ...</option>');
 
         if (!pegawaiId) {
@@ -260,7 +183,6 @@
             return;
         }
 
-        // Tampilkan loading indicator
         $select.append('<option value="" disabled>Memuat daftar nasabah...</option>');
         $select.trigger('change');
 
@@ -321,13 +243,10 @@
 
     let transaksi = "{{ @$transaksi }}";
     if(transaksi){
-        setDonatur('lama');
         setUpload('{{ @$transaksi->jenis_transaksi }}');
     }else{
         @role('Penghimpun')
-        setDonatur('lama');
         @else
-        setDonatur('baru');
         @endrole
         setUpload('cash');
     }

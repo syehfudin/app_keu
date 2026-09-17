@@ -51,6 +51,7 @@
     let tableSelector = "datatable-program";
 
     dt = $("#" + tableSelector).DataTable({
+        "pageLength": 20,
         "responsive": true,
         "lengthChange": false,
         "autoWidth": false,

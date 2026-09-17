@@ -7,50 +7,48 @@
 @php
     $role = strtolower(Auth::user()->roles[0]->name);
     $pegawai_id = Auth::user()->pegawai_id;
+    $punyaBukti = in_array($transaksi->jenis_transaksi, ['transfer', 'rek_ulama']) && $transaksi->nama_file;
 @endphp
 <div class="container-fluid p-0">
     <div class="row">
         <div class="col-12 col-lg-12">
             <form action="{{ $action }}" method="POST" autocomplete="off" enctype="multipart/form-data">
                 @csrf
+                {{-- Simpan pegawai_id & donatur_id asli (tidak bisa diubah saat edit) --}}
+                {!! Form::hidden('pegawai_id', $transaksi->pegawai_id) !!}
+                {!! Form::hidden('donatur_id', $transaksi->donatur_id) !!}
                 <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">Form {{ $title }}</h3>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label class="fs-6 fw-bold mb-2">Tanggal</label>
+                            <label class="fs-6 fw-bold mb-2">Tanggal <span class="text-primary">(dapat diubah)</span></label>
                             {!! Form::text('tanggal', @$transaksi->tanggal ? date('d-m-Y',  strtotime(@$transaksi->tanggal)) : date('d-m-Y'), array('class' => 'form-control', 'id' => 'datepicker')) !!}
                         </div>
-                        @if($role != 'relawan')
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">
-                                <span class="required">Nama Penghimpun</span>
+                                <span class="required">Nama Penghimpun</span> <span class="text-muted">(tidak dapat diubah)</span>
                             </label>
-                            <input type="hidden" name="pegawai_id" value="{{ $transaksi->pegawai_id }}">
-                            <select class="form-control" name="pegawai_id" disabled>
+                            {{-- Tampil read-only; nilainya dikirim via hidden field pegawai_id di atas --}}
+                            <select class="form-control" disabled>
                                 @foreach($relawan as $item)
                                     <option value="{{ $item->id }}" {{ $item->id == @$transaksi->pegawai_id ? 'selected' : '' }} >{{ $item->nama }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        @else
-                            {!! Form::hidden('pegawai_id', $pegawai_id) !!}
-                        @endif
                         <div class="mb-3">
-                            <label class="fs-6 fw-bold mb-2">Nama Nasabah</label>
-                            <select class="form-control select2" name="donatur_id">
-                                <option value="">Pilih Nasabah ...</option>
-                                @foreach($donatur as $item)
-                                    <option value="{{ $item->id }}" {{ $item->id == @$transaksi->donatur_id ? 'selected' : '' }}>{{ $item->nama }}</option>
-                                @endforeach
+                            <label class="fs-6 fw-bold mb-2">Nama Nasabah <span class="text-muted">(tidak dapat diubah)</span></label>
+                            {{-- Tampil read-only; nilainya dikirim via hidden field donatur_id di atas --}}
+                            <select class="form-control select2" disabled>
+                                <option value="">{{ $transaksi->nama_donatur ?? '-' }}</option>
                             </select>
                         </div>
                         <h5>Program</h5>
                         @php $total_donasi = 0 @endphp
                         @foreach($program as $item)
                         <div class="mb-3 donasi">
-                            <label class="fs-6 fw-bold mb-2">{{ $item->nama }}</label>
+                            <label class="fs-6 fw-bold mb-2">{{ $item->nama }} <span class="text-primary">(nominal dapat diubah)</span></label>
                             {!! Form::text('nominal_donasi[]', @$item->nominal_donasi, array('placeholder' => 'Masukan nominal yang akan didonasikan','class' => 'form-control nominal')) !!}
                             {!! Form::hidden('program_id[]', $item->id) !!}
                         </div>
@@ -68,20 +66,29 @@
                             {!! Form::text('total_donasi', @$total_donasi, array('placeholder' => 'Total donatur','class' => 'form-control total', 'readonly', @$show)) !!}
                         </div>
                         <div class="mb-3">
-                            <label class="fs-6 fw-bold mb-2">Keterangan</label>
+                            <label class="fs-6 fw-bold mb-2">Keterangan <span class="text-primary">(dapat diubah)</span></label>
                             {!! Form::textarea('keterangan', @$transaksi->keterangan, array('placeholder' => '','class' => 'form-control', 'rows' => '6')) !!}
                         </div>
                         <div class="mb-3">
-                            <label class="fs-6 fw-bold mb-2">Jenis Transaksi</label>
-                            {!! Form::select('jenis_transaksi', array('cash' => 'Titip di Penghimpun', 'transfer' => 'Setoran Transfer'), [], array('class' => 'form-control jt')) !!}
+                            <label class="fs-6 fw-bold mb-2">Jenis Transaksi <span class="text-primary">(dapat diubah)</span></label>
+                            {!! Form::select('jenis_transaksi', array('cash' => 'Titip di Penghimpun', 'transfer' => 'Setoran Transfer', 'rek_ulama' => 'Setoran ke Rek Ulama'), $transaksi->jenis_transaksi, array('class' => 'form-control jt')) !!}
                         </div>
-                        <div class="mb-3 upload">
-                            <label class="fs-6 fw-bold mb-2">Upload File Bukti Transfer</label>
-                            <input
-                                type="file"
-                                name="image"
-                                class="form-control @error('image') is-invalid @enderror">
+                        {{-- Bukti transfer: tampil & dapat diganti utk Setoran Transfer / Setoran ke Rek Ulama --}}
+                        @if(in_array($transaksi->jenis_transaksi, ['transfer', 'rek_ulama']))
+                        <div class="mb-3">
+                            <label class="fs-6 fw-bold mb-2">Bukti Transfer <span class="text-primary">(dapat diganti)</span></label>
+                            @if($punyaBukti)
+                            <div class="mb-2">
+                                <img src="{{ asset($transaksi->path . $transaksi->nama_file) }}" class="img-fluid rounded border" style="max-height:200px" alt="Bukti Transfer">
+                                <small class="d-block text-muted mt-1">Bukti saat ini: {{ $transaksi->nama_file }}</small>
+                            </div>
+                            <label class="fs-6 mb-2 text-muted">Ganti dengan file baru (opsional)</label>
+                            @else
+                            <p class="text-muted mb-2">Bukti transfer belum tersedia — silakan upload</p>
+                            @endif
+                            <input type="file" name="image" class="form-control" accept="image/*">
                         </div>
+                        @endif
                     </div>
                     <div class="card-footer">
                         @if(!@$show)
@@ -89,7 +96,7 @@
                                 <button type="submit" class="btn btn-primary">Simpan</button>
                             </div>
                         @endif
-                        <a class="btn btn-primary" href="{{ $redirectUrl }}"> Back</a>
+                        <a class="btn btn-secondary" href="{{ $redirectUrl }}"> Back</a>
                     </div>
                 </div>
             </form>
@@ -102,27 +109,14 @@
 <script src="{{ asset('js/jquery.maskMoney.js') }}"></script>
 <script type="text/javascript">
     $(".select2").select2();
+
     $( "#datepicker" ).datepicker({
         dateFormat: 'dd-mm-yy'
-    });
-    $(".status").on('click', function(){
-        let status = $(this).val();
-        setDonatur(status);
     });
 
     $(".jt").on('change', function() {
         let jt = $(this).val();
         setUpload(jt);
-    });
-
-    $(".pekerjaan").on('click', function(){
-        let status = $(this).val();
-        if(status == 'lainnya'){
-            $(".lainnya").attr("disabled", false);
-        }else{
-            $(".lainnya").attr("disabled", true);
-            $(".lainnya").val('');
-        }
     });
 
     $(".nominal").maskMoney({prefix:'Rp ', allowNegative: true, thousands:',', affixesStay: true, precision: 0});
@@ -133,7 +127,6 @@
         for (let i = 0; i < nominal.length; i++) {
             let currency = nominal[i].value;
             let cur = Number(currency.replace(/[^0-9.-]+/g,""));
-            console.log(cur);
 
             total_donasi = total_donasi + cur;
         }
@@ -142,34 +135,12 @@
         $(".total").val("Rp "+ total);
     });
 
-
     let setUpload = (jt) => {
         if(jt == 'cash'){
             $(".upload").attr('style', 'display:none');
         }else{
             $(".upload").attr('style', 'display:block');
         }
-    }
-
-    let setDonatur = (status) => {
-        let donatur_baru = document.getElementsByClassName('donatur_baru');
-        let donatur_lama = document.getElementsByClassName('donatur_lama');
-        if(status == 'baru'){
-            $(".donatur_baru").attr('style', 'display:block');
-            $(".donatur_lama").attr('style', 'display:none')
-        }else{
-            $(".donatur_baru").attr('style', 'display:none');
-            $(".donatur_lama").attr('style', 'display:block')
-        }
-    }
-
-    let transaksi = "{{ @$transaksi }}";
-    if(transaksi){
-        setDonatur('lama');
-        setUpload('{{ @$transaksi->jenis_transaksi }}');
-    }else{
-        setDonatur('baru');
-        setUpload('cash');
     }
 </script>
 @endpush

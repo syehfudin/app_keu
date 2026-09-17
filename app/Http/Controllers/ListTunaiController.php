@@ -35,7 +35,7 @@ class ListTunaiController extends Controller
         $query = Donatur::leftJoin('pegawai as p', 'donatur.pegawai_id', '=', 'p.id')
             ->leftJoin('transaksi as t', function ($join) use ($bulan, $tahun) {
                 $join->on('donatur.id', '=', 't.donatur_id')
-                    ->whereIn('t.jenis_transaksi', ['cash', 'transfer'])
+                    ->whereIn('t.jenis_transaksi', ['cash', 'transfer', 'rek_ulama'])
                     ->whereMonth('t.tanggal', $bulan)
                     ->whereYear('t.tanggal', $tahun);
             })
@@ -49,6 +49,7 @@ class ListTunaiController extends Controller
                 DB::raw("COALESCE(SUM(CASE WHEN t.jenis_transaksi = 'transfer' THEN td.nominal_donasi ELSE 0 END), 0) + COALESCE(SUM(CASE WHEN t.jenis_transaksi = 'cash' AND sd.id IS NOT NULL THEN td.nominal_donasi ELSE 0 END), 0) as total_sudah_setor"),
                 DB::raw("COALESCE(SUM(CASE WHEN t.jenis_transaksi = 'cash' AND sd.id IS NULL THEN td.nominal_donasi ELSE 0 END), 0) as total_belum_setor"),
                 DB::raw("COUNT(DISTINCT CASE WHEN t.jenis_transaksi = 'cash' AND sd.id IS NULL THEN t.id END) as cnt_cash_belum"),
+                DB::raw("COALESCE(SUM(CASE WHEN t.jenis_transaksi = 'rek_ulama' THEN td.nominal_donasi ELSE 0 END), 0) as total_rek_ulama"),
             ])
             ->groupBy(['donatur.id', 'donatur.nama', 'donatur.no_telepon', 'donatur.alamat', 'p.nama', 'donatur.pegawai_id']);
 
@@ -63,9 +64,17 @@ class ListTunaiController extends Controller
         $totalSudahSetor = $data->sum('total_sudah_setor');
         $totalBelumSetor = $data->sum('total_belum_setor');
 
+        // ===== Summary Setoran =====
+        $totalRekUlama = $data->sum('total_rek_ulama');
+        // Total Setoran Kasie = Setoran Transfer + Cash yang sudah disetor
+        $totalKasie = $totalSudahSetor;
+        // Total Setoran = Kasie + Rek Ulama
+        $totalSetoran = $totalKasie + $totalRekUlama;
+
         return view('tunai.index', compact(
             'title', 'data', 'bulanList', 'bulan', 'tahun',
-            'totalSemua', 'totalTransaksi', 'totalSudahSetor', 'totalBelumSetor'
+            'totalSemua', 'totalTransaksi', 'totalSudahSetor', 'totalBelumSetor',
+            'totalRekUlama', 'totalKasie', 'totalSetoran'
         ));
     }
 }

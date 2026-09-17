@@ -130,6 +130,7 @@ class GoogleSheetService
                 'd.no_telepon',
                 'transaksi.keterangan',
                 'transaksi.jenis_transaksi',
+                'transaksi.file_id',
             ])
             ->where('transaksi.id', $idTransaksi)
             ->first();
@@ -149,9 +150,22 @@ class GoogleSheetService
         $jenis_pembayaran = $transaksi->jenis_transaksi;
         if ($jenis_pembayaran == 'cash') {
             $list[] = 'Titip di Penghimpun';
+        } elseif ($jenis_pembayaran == 'rek_ulama') {
+            $list[] = 'Setoran ke Rek Ulama';
         } else {
             $list[] = 'Setoran Transfer';
         }
+
+        // ===== Bukti Transfer link (untuk Setoran Transfer & Setoran ke Rek Ulama) =====
+        $buktiLink = '';
+        if (in_array($jenis_pembayaran, ['transfer', 'rek_ulama']) && ! empty($transaksi->file_id)) {
+            $file = DB::table('file')->where('id', $transaksi->file_id)->first();
+            if ($file) {
+                $buktiLink = asset($file->path . $file->nama);
+            }
+        }
+        $list[] = $buktiLink;
+
         // dd($list);
         $data[] = $list;
         Sheets::spreadsheet(config('google.spread_sheet_id'))->sheet('report')->append($data);

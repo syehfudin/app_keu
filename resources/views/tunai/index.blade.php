@@ -41,7 +41,7 @@
     </div>
 
     <div class="row mb-3">
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="small-box bg-info">
                 <div class="inner">
                     <h3>{{ number_format($totalTransaksi, 0, ',', '.') }}</h3>
@@ -50,7 +50,7 @@
                 <i class="fas fa-receipt" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="small-box bg-primary">
                 <div class="inner">
                     <h3>Rp {{ number_format($totalSemua, 0, ',', '.') }}</h3>
@@ -59,20 +59,41 @@
                 <i class="fas fa-money-bill-wave" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>Rp {{ number_format($totalRekUlama, 0, ',', '.') }}</h3>
+                    <p>Total Setor ke Rek Ulama - {{ $bulanList[$bulan] }} {{ $tahun }}</p>
+                </div>
+                <i class="fas fa-university" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
             <div class="small-box bg-success">
                 <div class="inner">
                     <h3>Rp {{ number_format($totalSudahSetor, 0, ',', '.') }}</h3>
-                    <p>Total Sudah Setor - {{ $bulanList[$bulan] }} {{ $tahun }}</p>
+                    <p>Total Setoran Kasie (Transfer + Cash disetor) - {{ $bulanList[$bulan] }} {{ $tahun }}</p>
                 </div>
-                <i class="fas fa-check-circle" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
+                <i class="fas fa-users" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
+            <div class="small-box bg-gradient-navy" style="background-color:#343a40;">
+                <div class="inner">
+                    <h3>Rp {{ number_format($totalSetoran, 0, ',', '.') }}</h3>
+                    <p>Total Setoran (Kasie + Rek Ulama) - {{ $bulanList[$bulan] }} {{ $tahun }}</p>
+                </div>
+                <i class="fas fa-layer-group" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
+            </div>
+        </div>
+        <div class="col-md-4">
             <div class="small-box bg-danger">
                 <div class="inner">
                     <h3>Rp {{ number_format($totalBelumSetor, 0, ',', '.') }}</h3>
-                    <p>Total Belum Setor - {{ $bulanList[$bulan] }} {{ $tahun }}</p>
+                    <p>Sisa Belum Setor (Cash) - {{ $bulanList[$bulan] }} {{ $tahun }}</p>
                 </div>
                 <i class="fas fa-clock" style="font-size: 50px; opacity: 0.5; position: absolute; right: 15px; top: 15px;"></i>
             </div>

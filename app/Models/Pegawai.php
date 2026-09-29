@@ -19,8 +19,24 @@ class Pegawai extends Model
     protected $gurarded = 'id';
 
     protected $fillable = [
-        'jabatan', 'nip', 'nama', 'alamat', 'no_telepon', 'default',
+        'jabatan', 'nip', 'nama', 'alamat', 'no_telepon', 'default', 'wakil_pegawai_id',
     ];
+
+    /**
+     * R4: penghimpun/pihak yang mewakili pelaporan pegawai ini.
+     */
+    public function wakil()
+    {
+        return $this->belongsTo(Pegawai::class, 'wakil_pegawai_id', 'id');
+    }
+
+    /**
+     * R4: daftar pegawai yang diwakilkan pelaporannya kepada pegawai ini.
+     */
+    public function diwakilkan()
+    {
+        return $this->hasMany(Pegawai::class, 'wakil_pegawai_id', 'id');
+    }
 
     public function Donatur()
     {

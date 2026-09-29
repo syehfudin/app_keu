@@ -29,7 +29,32 @@ trait HasHierarchy
 
         // Penghimpun tanpa bawahan tetap boleh punya subtree (dirinya saja,
         // tapi tetap lewat recursive agar konsisten dan cycle-safe).
-        return $this->getSubtreeIds($pegawai_id);
+        $subtree = $this->getSubtreeIds($pegawai_id);
+
+        // R4: pewakilan laporan. Sertakan pegawai yang mewakilkan laporannya
+        // (pegawai.wakil_pegawai_id) kepada salah satu id pada subtree,
+        // agar laporan penghimpun tidak aktif tetap tampil di lingkup wakilnya.
+        return $this->withDelegated($subtree);
+    }
+
+    /**
+     * R4: Perluas himpunan id dengan pegawai yang diwakilkan ke id tsb.
+     * Hanya menambah (tidak pernah mengurangi), satu level, dan hanya
+     * dipakai untuk READ-scope laporan (bukan structural subtree / cycle-guard).
+     */
+    protected function withDelegated(array $ids)
+    {
+        if (empty($ids)) {
+            return $ids;
+        }
+
+        $delegated = DB::table('pegawai')
+            ->whereIn('wakil_pegawai_id', $ids)
+            ->pluck('id')
+            ->map(fn ($v) => (int) $v)
+            ->all();
+
+        return array_values(array_unique(array_merge($ids, $delegated)));
     }
 
     /**

@@ -183,8 +183,7 @@ class DashboardController extends Controller
         // Get bawahan IDs for each supervisor (including self)
         $supBawahanMap = [];
         foreach ($allSupervisors as $sup) {
-            $bawahanIds = Korel::where('kepala_id', $sup->id)->pluck('bawahan_id')->toArray();
-            $bawahanIds[] = $sup->id;
+            $bawahanIds = $this->getSubtreeIds($sup->id);
             $supBawahanMap[$sup->id] = $bawahanIds;
         }
 
@@ -286,8 +285,7 @@ class DashboardController extends Controller
 
         // For each supervisor, get monthly nasabah tunai count and nominal
         foreach ($supervisors as $sup) {
-            $bawahanIds = Korel::where('kepala_id', $sup->id)->pluck('bawahan_id')->toArray();
-            $bawahanIds[] = $sup->id;
+            $bawahanIds = $this->getSubtreeIds($sup->id);
 
             for ($m = 1; $m <= 12; $m++) {
                 $data = Transaksi::join('donatur', 'donatur.id', '=', 'transaksi.donatur_id')

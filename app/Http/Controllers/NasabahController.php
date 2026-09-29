@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Donatur;
+use App\Models\Nasabah;
 use App\Models\Pekerjaan;
 use App\Models\User;
 use Auth;
@@ -10,7 +10,7 @@ use DataTables;
 use Illuminate\Http\Request;
 use App\Traits\HasHierarchy;
 
-class DonaturController extends Controller
+class NasabahController extends Controller
 {
     use HasHierarchy;
     /**
@@ -20,12 +20,12 @@ class DonaturController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('permission:donatur-list|donatur-create|donatur-edit|donatur-delete', ['only' => ['index', 'show', 'indexData']]);
-        $this->middleware('permission:donatur-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:donatur-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:donatur-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:nasabah-list|nasabah-create|nasabah-edit|nasabah-delete', ['only' => ['index', 'show', 'indexData']]);
+        $this->middleware('permission:nasabah-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:nasabah-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:nasabah-delete', ['only' => ['destroy']]);
         $this->title = 'Data Nasabah';
-        $this->redirectUrl = route('donatur.index');
+        $this->redirectUrl = route('nasabah.index');
     }
 
     public function index()
@@ -52,7 +52,7 @@ class DonaturController extends Controller
             ->where('r.name', 'Penghimpun')
             ->orderBy('p.nama')->get(['p.id', 'p.nama']);
 
-        return view('donatur.index', compact(
+        return view('nasabah.index', compact(
             'title', 'managers', 'supervisors', 'penghimpuns'
         ));
     }
@@ -69,16 +69,16 @@ class DonaturController extends Controller
 
         // ===== Kolom hierarki: Penghimpun (pemegang nasabah),
         // Supervisor & Manager = atasan di korel =====
-        $query = Donatur::leftJoin('pegawai as p', 'donatur.pegawai_id', '=', 'p.id')
+        $query = Nasabah::leftJoin('pegawai as p', 'nasabah.pegawai_id', '=', 'p.id')
             ->leftJoin('korel as k1', 'k1.bawahan_id', '=', 'p.id') // p adalah bawahan dari Supervisor
             ->leftJoin('pegawai as sp', 'sp.id', '=', 'k1.kepala_id')
             ->leftJoin('korel as k2', 'k2.bawahan_id', '=', 'sp.id') // Supervisor bawahan dari Manager
             ->leftJoin('pegawai as mg', 'mg.id', '=', 'k2.kepala_id')
             ->select([
-                'donatur.id',
-                'donatur.nama as nama_donatur',
-                'donatur.no_telepon',
-                'donatur.pekerjaan',
+                'nasabah.id',
+                'nasabah.nama as nama_nasabah',
+                'nasabah.no_telepon',
+                'nasabah.pekerjaan',
                 'p.id as penghimpun_id',
                 'p.nama as nama_relawan',
                 'sp.nama as nama_supervisor',
@@ -95,20 +95,20 @@ class DonaturController extends Controller
 
         $accessibleIds = $this->getAccessiblePegawaiIds();
         if ($accessibleIds !== null) {
-            $query->whereIn('donatur.pegawai_id', $accessibleIds);
+            $query->whereIn('nasabah.pegawai_id', $accessibleIds);
         }
 
         if ($filterManager) {
             // Nasabah milik seluruh subtree Manager: ambil bawahan Manager
             // (Supervisor + Penghimpun level-2 di bawahnya)
             $subtree = $this->getSubtreeIds((int) $filterManager);
-            $query->whereIn('donatur.pegawai_id', $subtree);
+            $query->whereIn('nasabah.pegawai_id', $subtree);
         } elseif ($filterSupervisor) {
             $subtree = $this->getSubtreeIds((int) $filterSupervisor);
-            $query->whereIn('donatur.pegawai_id', $subtree);
+            $query->whereIn('nasabah.pegawai_id', $subtree);
         }
         if ($filterPenghimpun) {
-            $query->where('donatur.pegawai_id', (int) $filterPenghimpun);
+            $query->where('nasabah.pegawai_id', (int) $filterPenghimpun);
         }
 
         // ===== Client-side mode: return plain JSON =====
@@ -118,13 +118,13 @@ class DonaturController extends Controller
         $data = $query->get();
 
         $rows = [];
-        foreach ($data as $donatur) {
+        foreach ($data as $nasabah) {
             $rows[] = [
-                'nama_manager' => $donatur->nama_manager,
-                'nama_supervisor' => $donatur->nama_supervisor,
-                'nama_relawan' => $donatur->nama_relawan,
-                'nama_donatur' => $donatur->nama_donatur,
-                'action' => view('donatur.action', ['donatur' => $donatur])->render(),
+                'nama_manager' => $nasabah->nama_manager,
+                'nama_supervisor' => $nasabah->nama_supervisor,
+                'nama_relawan' => $nasabah->nama_relawan,
+                'nama_nasabah' => $nasabah->nama_nasabah,
+                'action' => view('nasabah.action', ['nasabah' => $nasabah])->render(),
             ];
         }
 
@@ -139,7 +139,7 @@ class DonaturController extends Controller
     public function create()
     {
         $title = 'Tambah '.$this->title;
-        $action = route('donatur.store');
+        $action = route('nasabah.store');
         $redirectUrl = $this->redirectUrl;
 
         $pekerjaan = Pekerjaan::get();
@@ -154,7 +154,7 @@ class DonaturController extends Controller
             ])
             ->get();
 
-        return view('donatur.create', compact('title', 'action', 'redirectUrl', 'relawan', 'pekerjaan'));
+        return view('nasabah.create', compact('title', 'action', 'redirectUrl', 'relawan', 'pekerjaan'));
     }
 
     /**
@@ -169,7 +169,7 @@ class DonaturController extends Controller
             'nama' => 'required',
             'pegawai_id' => 'required',
         ], [
-            'nama.required' => 'Nama donatur wajib diisi',
+            'nama.required' => 'Nama nasabah wajib diisi',
             'pegawai_id.required' => 'Nama Penghimpun wajib dipilih',
         ]
         );
@@ -179,9 +179,9 @@ class DonaturController extends Controller
             $input['pekerjaan'] = $input['pekerjaan'].'-'.$input['lainnya'];
         }
 
-        Donatur::create($input);
+        Nasabah::create($input);
 
-        return redirect()->route('donatur.index')
+        return redirect()->route('nasabah.index')
                         ->with('success', ucfirst('Tambah '.$this->title.' Berhasil'));
     }
 
@@ -193,7 +193,7 @@ class DonaturController extends Controller
      */
     public function show($id)
     {
-        $donatur = donatur::find($id);
+        $nasabah = nasabah::find($id);
         $title = 'Show '.$this->title;
         $action = '#';
         $show = 'disabled';
@@ -210,7 +210,7 @@ class DonaturController extends Controller
             ])
             ->get();
 
-        return view('donatur.create', compact('title', 'action', 'redirectUrl', 'donatur', 'show', 'relawan', 'pekerjaan'));
+        return view('nasabah.create', compact('title', 'action', 'redirectUrl', 'nasabah', 'show', 'relawan', 'pekerjaan'));
     }
 
     /**
@@ -221,10 +221,10 @@ class DonaturController extends Controller
      */
     public function edit($id)
     {
-        $donatur = donatur::find($id);
+        $nasabah = nasabah::find($id);
         $redirectUrl = $this->redirectUrl;
         $title = 'Ubah '.$this->title;
-        $action = route('donatur.update', $id);
+        $action = route('nasabah.update', $id);
 
         $pekerjaan = Pekerjaan::get();
         $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
@@ -237,7 +237,7 @@ class DonaturController extends Controller
             ])
             ->get();
 
-        return view('donatur.create', compact('title', 'action', 'redirectUrl', 'donatur', 'relawan', 'pekerjaan'));
+        return view('nasabah.create', compact('title', 'action', 'redirectUrl', 'nasabah', 'relawan', 'pekerjaan'));
     }
 
     /**
@@ -253,7 +253,7 @@ class DonaturController extends Controller
             'nama' => 'required',
             'pegawai_id' => 'required',
         ], [
-            'nama.required' => 'Nama donatur wajib diisi',
+            'nama.required' => 'Nama nasabah wajib diisi',
             'pegawai_id.required' => 'Nama Penghimpun wajib dipilih',
         ]
         );
@@ -263,10 +263,10 @@ class DonaturController extends Controller
             $input['pekerjaan'] = $input['pekerjaan'].'-'.$input['lainnya'];
         }
 
-        donatur::find($id)
+        nasabah::find($id)
             ->update($input);
 
-        return redirect()->route('donatur.index')
+        return redirect()->route('nasabah.index')
                         ->with('success', ucfirst('Ubah '.$this->title.' Berhasil'));
     }
 
@@ -278,9 +278,9 @@ class DonaturController extends Controller
      */
     public function destroy($id)
     {
-        donatur::find($id)->delete();
+        nasabah::find($id)->delete();
 
-        return redirect()->route('donatur.index')
+        return redirect()->route('nasabah.index')
                         ->with('success', ucfirst('Hapus '.$this->title.' berhasil'));
     }
 }

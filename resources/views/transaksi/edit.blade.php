@@ -14,9 +14,9 @@
         <div class="col-12 col-lg-12">
             <form action="{{ $action }}" method="POST" autocomplete="off" enctype="multipart/form-data">
                 @csrf
-                {{-- Simpan pegawai_id & donatur_id asli (tidak bisa diubah saat edit) --}}
+                {{-- Simpan pegawai_id & nasabah_id asli (tidak bisa diubah saat edit) --}}
                 {!! Form::hidden('pegawai_id', $transaksi->pegawai_id) !!}
-                {!! Form::hidden('donatur_id', $transaksi->donatur_id) !!}
+                {!! Form::hidden('nasabah_id', $transaksi->nasabah_id) !!}
                 <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">Form {{ $title }}</h3>
@@ -39,9 +39,9 @@
                         </div>
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">Nama Nasabah <span class="text-muted">(tidak dapat diubah)</span></label>
-                            {{-- Tampil read-only; nilainya dikirim via hidden field donatur_id di atas --}}
+                            {{-- Tampil read-only; nilainya dikirim via hidden field nasabah_id di atas --}}
                             <select class="form-control select2" disabled>
-                                <option value="">{{ $transaksi->nama_donatur ?? '-' }}</option>
+                                <option value="">{{ $transaksi->nama_nasabah ?? '-' }}</option>
                             </select>
                         </div>
                         <h5>Program</h5>
@@ -63,7 +63,7 @@
                         @endforeach
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">Total Donasi</label>
-                            {!! Form::text('total_donasi', @$total_donasi, array('placeholder' => 'Total donatur','class' => 'form-control total', 'readonly', @$show)) !!}
+                            {!! Form::text('total_donasi', @$total_donasi, array('placeholder' => 'Total nasabah','class' => 'form-control total', 'readonly', @$show)) !!}
                         </div>
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">Keterangan <span class="text-primary">(dapat diubah)</span></label>

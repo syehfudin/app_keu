@@ -22,37 +22,37 @@
                             <select class="form-control" name="pegawai_id">
                                 <option value="">Pilih Penghimpun ...</option>
                                 @foreach($relawan as $item)
-                                    <option value="{{ $item->id }}" {{ $item->id == @$donatur->pegawai_id ? 'selected' : '' }}>{{ $item->nama }}</option>
+                                    <option value="{{ $item->id }}" {{ $item->id == @$nasabah->pegawai_id ? 'selected' : '' }}>{{ $item->nama }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">Nama Nasabah</label>
-                            {!! Form::text('nama', @$donatur->nama, array('placeholder' => 'Masukan nama donatur','class' => 'form-control', @$show)) !!}
+                            {!! Form::text('nama', @$nasabah->nama, array('placeholder' => 'Masukan nama nasabah','class' => 'form-control', @$show)) !!}
                         </div>
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">Nomor HP Nasabah</label>
-                            {!! Form::text('no_telepon', @$donatur->no_telepon, array('placeholder' => 'Masukan nomor hp donatur','class' => 'form-control', @$show)) !!}
+                            {!! Form::text('no_telepon', @$nasabah->no_telepon, array('placeholder' => 'Masukan nomor hp nasabah','class' => 'form-control', @$show)) !!}
                         </div>
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">Alamat</label>
-                            {!! Form::textarea('alamat', @$donatur->alamat, array('placeholder' => 'Masukan alamat donatur','class' => 'form-control', 'rows' => '4', @$show)) !!}
+                            {!! Form::textarea('alamat', @$nasabah->alamat, array('placeholder' => 'Masukan alamat nasabah','class' => 'form-control', 'rows' => '4', @$show)) !!}
                         </div>
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">Pekerjaan</label>
                             @foreach($pekerjaan as $item)
                             <label class="form-check">
-                                {!! Form::radio('pekerjaan', $item->nama, @$donatur->pekerjaan == $item->nama ? true : false, array('class' => 'form-check-input pekerjaan', @$show)) !!}
+                                {!! Form::radio('pekerjaan', $item->nama, @$nasabah->pekerjaan == $item->nama ? true : false, array('class' => 'form-check-input pekerjaan', @$show)) !!}
                                 <span class="form-check-label">
                                     {{ $item->nama }}
                                 </span>
                             </label>
                             @endforeach
                             <label class="form-check">
-                                {!! Form::radio('pekerjaan', 'lainnya', explode("-",@$donatur->pekerjaan)[0] == 'lainnya' ? true : false, array('class' => 'form-check-input pekerjaan', @$show)) !!}
+                                {!! Form::radio('pekerjaan', 'lainnya', explode("-",@$nasabah->pekerjaan)[0] == 'lainnya' ? true : false, array('class' => 'form-check-input pekerjaan', @$show)) !!}
                                 <span class="form-check-label">
                                     Lainnya
-                                    <input type="text" name="lainnya" class="form-control w-25 lainnya" value="{{ @explode('-',@$donatur->pekerjaan)[1] }}">
+                                    <input type="text" name="lainnya" class="form-control w-25 lainnya" value="{{ @explode('-',@$nasabah->pekerjaan)[1] }}">
                                 </span>
                             </label>
                         </div>

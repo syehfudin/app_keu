@@ -57,14 +57,14 @@
                         @endif
                         <div class="mb-3 ">
                             <label class="fs-6 fw-bold mb-2">Nama Nasabah</label>
-                            <select class="form-control select2" name="donatur_id" id="donatur_id">
+                            <select class="form-control select2" name="nasabah_id" id="nasabah_id">
                                 <option value="">Pilih Nasabah ...</option>
-                                @foreach($donatur as $item)
-                                    <option value="{{ $item->id }}" {{ $item->id == @$transaksi->donatur_id ? 'selected' : '' }}>{{ $item->nama }}</option>
+                                @foreach($nasabah as $item)
+                                    <option value="{{ $item->id }}" {{ $item->id == @$transaksi->nasabah_id ? 'selected' : '' }}>{{ $item->nama }}</option>
                                 @endforeach
                             </select>
                             @if($needPegawaiSelect)
-                            <small class="form-text text-muted" id="donatur_hint">
+                            <small class="form-text text-muted" id="nasabah_hint">
                                 Pilih Penghimpun dahulu, daftar nasabah akan dimuat otomatis.
                             </small>
                             @endif
@@ -88,7 +88,7 @@
                         @endforeach
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">Total Donasi</label>
-                            {!! Form::text('total_donasi', @$total_donasi, array('placeholder' => 'Total donatur','class' => 'form-control total', 'readonly', @$show)) !!}
+                            {!! Form::text('total_donasi', @$total_donasi, array('placeholder' => 'Total nasabah','class' => 'form-control total', 'readonly', @$show)) !!}
                         </div>
                         <div class="mb-3">
                             <label class="fs-6 fw-bold mb-2">Keterangan</label>
@@ -174,8 +174,8 @@
     // ============================================================
     let needPegawaiSelect = {{ $needPegawaiSelect ? 'true' : 'false' }};
 
-    let loadDonaturByPegawai = (pegawaiId) => {
-        let $select = $("#donatur_id");
+    let loadNasabahByPegawai = (pegawaiId) => {
+        let $select = $("#nasabah_id");
         $select.empty().append('<option value="">Pilih Nasabah ...</option>');
 
         if (!pegawaiId) {
@@ -187,7 +187,7 @@
         $select.trigger('change');
 
         $.ajax({
-            url: "{{ route('transaksi.getDonaturByPegawai', ['pegawai_id' => ':PEGAWAI_ID:']) }}".replace(':PEGAWAI_ID:', pegawaiId),
+            url: "{{ route('transaksi.getNasabahByPegawai', ['pegawai_id' => ':PEGAWAI_ID:']) }}".replace(':PEGAWAI_ID:', pegawaiId),
             type: "GET",
             dataType: "json",
             success: function(data) {
@@ -205,7 +205,7 @@
                 $select.empty().append('<option value="">Pilih Nasabah ...</option>');
                 $select.append('<option value="" disabled>Gagal memuat nasabah</option>');
                 $select.trigger('change');
-                console.error("AJAX getDonaturByPegawai error:", status, error);
+                console.error("AJAX getNasabahByPegawai error:", status, error);
             }
         });
     };
@@ -214,7 +214,7 @@
         // Saat dropdown Penghimpun berubah, muat ulang daftar Nasabah
         $("#pegawai_id").on('change', function() {
             let pegawaiId = $(this).val();
-            loadDonaturByPegawai(pegawaiId);
+            loadNasabahByPegawai(pegawaiId);
         });
 
         // Saat form baru (bukan edit): jika penghimpun pertama sudah
@@ -233,10 +233,10 @@
             // reset ke placeholder.
             if (!$("#pegawai_id option:selected").length || $("#pegawai_id").val() === "") {
                 $("#pegawai_id").val('').trigger('change');
-                $("#donatur_id").empty().append('<option value="">Pilih Penghimpun dahulu...</option>').trigger('change');
+                $("#nasabah_id").empty().append('<option value="">Pilih Penghimpun dahulu...</option>').trigger('change');
             } else {
                 // Ada penghimpun terpilih (mis. via default), langsung muat nasabah
-                loadDonaturByPegawai($("#pegawai_id").val());
+                loadNasabahByPegawai($("#pegawai_id").val());
             }
         }
     }

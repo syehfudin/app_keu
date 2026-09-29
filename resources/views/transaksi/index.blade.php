@@ -201,7 +201,7 @@
             { data: "DT_RowIndex", name: "DT_RowIndex" },
             { data: "tanggal_donasi", name: "tanggal_donasi" },
             { data: "nama_relawan", name: "nama_relawan" },
-            { data: "nama_donatur", name: "nama_donatur" },
+            { data: "nama_nasabah", name: "nama_nasabah" },
             { data: "jenis_donasi", name: "jenis_donasi" },
             { data: "jenis_transaksi", name: "jenis_transaksi" },
             { data: "total_donasi", name: "total_donasi", class: 'text-right' },

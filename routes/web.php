@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DonaturController;
+use App\Http\Controllers\NasabahController;
 use App\Http\Controllers\KorelController;
 use App\Http\Controllers\ListTunaiController;
 use App\Http\Controllers\ImportController;
@@ -69,15 +69,15 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/index_data', [PegawaiController::class, 'indexData'])->name('pegawai.index_data');
     });
 
-    Route::prefix('donatur')->group(function () {
-        Route::get('/', [DonaturController::class, 'index'])->name('donatur.index');
-        Route::get('/create', [DonaturController::class, 'create'])->name('donatur.create');
-        Route::post('/', [DonaturController::class, 'store'])->name('donatur.store');
-        Route::get('/show/{id}', [DonaturController::class, 'show'])->name('donatur.show');
-        Route::get('/edit/{id}', [DonaturController::class, 'edit'])->name('donatur.edit');
-        Route::post('/update/{id}', [DonaturController::class, 'update'])->name('donatur.update');
-        Route::delete('/{id}', [DonaturController::class, 'destroy'])->name('donatur.destroy');
-        Route::get('/index_data', [DonaturController::class, 'indexData'])->name('donatur.index_data');
+    Route::prefix('nasabah')->group(function () {
+        Route::get('/', [NasabahController::class, 'index'])->name('nasabah.index');
+        Route::get('/create', [NasabahController::class, 'create'])->name('nasabah.create');
+        Route::post('/', [NasabahController::class, 'store'])->name('nasabah.store');
+        Route::get('/show/{id}', [NasabahController::class, 'show'])->name('nasabah.show');
+        Route::get('/edit/{id}', [NasabahController::class, 'edit'])->name('nasabah.edit');
+        Route::post('/update/{id}', [NasabahController::class, 'update'])->name('nasabah.update');
+        Route::delete('/{id}', [NasabahController::class, 'destroy'])->name('nasabah.destroy');
+        Route::get('/index_data', [NasabahController::class, 'indexData'])->name('nasabah.index_data');
     });
 
     Route::prefix('pekerjaan')->group(function () {
@@ -111,7 +111,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/update/{id}', [TransaksiController::class, 'update'])->name('transaksi.update');
         Route::delete('/{id}', [TransaksiController::class, 'destroy'])->name('transaksi.destroy');
         Route::get('/index_data', [TransaksiController::class, 'indexData'])->name('transaksi.index_data');
-        Route::get('/get-donatur-by-pegawai/{pegawai_id}', [TransaksiController::class, 'getDonaturByPegawai'])->name('transaksi.getDonaturByPegawai');
+        Route::get('/get-nasabah-by-pegawai/{pegawai_id}', [TransaksiController::class, 'getNasabahByPegawai'])->name('transaksi.getNasabahByPegawai');
         Route::get('/print/{id}', [TransaksiController::class, 'importPdf'])->name('transaksi.importPdf');
     });
 

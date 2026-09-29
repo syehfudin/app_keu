@@ -25,7 +25,7 @@
                             <tr>
                                 <td>{{ $no++ }}</td>
                                 <td>{{ Date('d-m-Y', strtotime($item->tanggal)) }}</td>
-                                <td>{{ $item->nama_donatur }}</td>
+                                <td>{{ $item->nama_nasabah }}</td>
                                 <td>Rp {{ number_format($item->total_donasi) }}</td>
                             </tr>
                             @endforeach

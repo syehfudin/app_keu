@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Donatur;
+use App\Models\Nasabah;
 use App\Models\File as Files;
 use App\Models\Pegawai;
 use App\Models\Pekerjaan;
@@ -29,7 +29,7 @@ class TransaksiController extends Controller
     public function __construct()
     {
         $this->middleware('permission:transaksi-list|transaksi-create|transaksi-edit|transaksi-delete', ['only' => ['index', 'show', 'indexData']]);
-        $this->middleware('permission:transaksi-create', ['only' => ['create', 'store', 'getDonaturByPegawai']]);
+        $this->middleware('permission:transaksi-create', ['only' => ['create', 'store', 'getNasabahByPegawai']]);
         $this->middleware('permission:transaksi-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:transaksi-delete', ['only' => ['destroy']]);
         $this->title = 'Data Transaksi';
@@ -79,12 +79,12 @@ class TransaksiController extends Controller
     public function indexData(Request $request)
     {
         $query = Transaksi::leftJoin('pegawai as p', 'transaksi.pegawai_id', '=', 'p.id')
-            ->leftJoin('donatur as d', 'transaksi.donatur_id', '=', 'd.id')
+            ->leftJoin('nasabah as d', 'transaksi.nasabah_id', '=', 'd.id')
             ->select([
                 'transaksi.id',
                 'transaksi.tanggal as tanggal_donasi',
                 'p.nama as nama_relawan',
-                'd.nama as nama_donatur',
+                'd.nama as nama_nasabah',
                 'transaksi.jenis_transaksi',
                 'transaksi.keterangan',
             ]);
@@ -142,7 +142,7 @@ class TransaksiController extends Controller
             return $item;
         });
 
-        // Global search DataTables DIBATASI hanya ke kolom nama_donatur
+        // Global search DataTables DIBATASI hanya ke kolom nama_nasabah
         // (Nama Nasabah). whitelist() memastikan di sisi server hanya kolom
         // tersebut yang ikut global search, terlepas dari flag client.
         // (Pertahanan ganda: di JS, kolom lain juga diset searchable:false.)
@@ -152,7 +152,7 @@ class TransaksiController extends Controller
                 return view('transaksi.action', compact('transaksi'));
             })
             ->rawColumns(['action', 'jenis_donasi'])
-            ->whitelist(['nama_donatur'])
+            ->whitelist(['nama_nasabah'])
             ->make(true);
     }
 
@@ -171,20 +171,20 @@ class TransaksiController extends Controller
         $role = strtolower(Auth::user()->roles[0]->name);
         $accessibleIds = $this->getAccessiblePegawaiIds();
         if ($role == 'penghimpun') {
-            // Penghimpun: pre-load donatur miliknya (tidak ada dropdown penghimpun,
+            // Penghimpun: pre-load nasabah miliknya (tidak ada dropdown penghimpun,
             // tidak ada AJAX). Perilaku tidak berubah.
-            $donatur = Donatur::where('pegawai_id', $pegawai_id)->orderBy('nama', 'asc')->get();
+            $nasabah = Nasabah::where('pegawai_id', $pegawai_id)->orderBy('nama', 'asc')->get();
             $relawan = Pegawai::where('id', $pegawai_id)->get();
         } elseif (in_array($role, ['manager', 'gm', 'general manager', 'direktur', 'dirops', 'dir. ops', 'direktur ops', 'direktur operasional'])) {
             // Manager/GM/Direktur/DirOps: input HANYA untuk nasabah milik dirinya
             // (kebijakan input-scope). Dropdown penghimpun terkunci ke diri sendiri,
-            // donatur miliknya di pre-load seperti penghimpun.
-            $donatur = Donatur::where('pegawai_id', $pegawai_id)->orderBy('nama', 'asc')->get();
+            // nasabah miliknya di pre-load seperti penghimpun.
+            $nasabah = Nasabah::where('pegawai_id', $pegawai_id)->orderBy('nama', 'asc')->get();
             $relawan = Pegawai::where('id', $pegawai_id)->get();
         } elseif ($role == 'supervisor') {
-            // Supervisor: donatur awal kosong, diisi via AJAX setelah penghimpun
+            // Supervisor: nasabah awal kosong, diisi via AJAX setelah penghimpun
             // (bawahan supervisor) dipilih di dropdown.
-            $donatur = collect();
+            $nasabah = collect();
             $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
                 ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
                 ->join('roles as r', 'r.id', '=', 'mhr.role_id')
@@ -200,9 +200,9 @@ class TransaksiController extends Controller
                 ])
                 ->get();
         } else {
-            // Admin / Manager: donatur awal kosong, diisi via AJAX setelah
+            // Admin / Manager: nasabah awal kosong, diisi via AJAX setelah
             // penghimpun dipilih di dropdown.
-            $donatur = collect();
+            $nasabah = collect();
             $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
                 ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
                 ->join('roles as r', 'r.id', '=', 'mhr.role_id')
@@ -217,11 +217,11 @@ class TransaksiController extends Controller
 
         $pekerjaan = Pekerjaan::get();
 
-        return view('transaksi.create', compact('title', 'action', 'redirectUrl', 'relawan', 'donatur', 'pekerjaan', 'program'));
+        return view('transaksi.create', compact('title', 'action', 'redirectUrl', 'relawan', 'nasabah', 'pekerjaan', 'program'));
     }
 
     /**
-     * AJAX: ambil daftar donatur (nasabah) milik seorang penghimpun.
+     * AJAX: ambil daftar nasabah (nasabah) milik seorang penghimpun.
      * Dipakai oleh form Tambah/Edit Transaksi saat Admin/Supervisor/Manager
      * memilih penghimpun terlebih dahulu, agar dropdown nasabah ter-filter
      * hanya menampilkan nasabah milik penghimpun yang dipilih.
@@ -230,13 +230,13 @@ class TransaksiController extends Controller
      * @param  int  $pegawai_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getDonaturByPegawai(Request $request, $pegawai_id)
+    public function getNasabahByPegawai(Request $request, $pegawai_id)
     {
-        $donatur = Donatur::where('pegawai_id', $pegawai_id)
+        $nasabah = Nasabah::where('pegawai_id', $pegawai_id)
             ->orderBy('nama', 'asc')
             ->get(['id', 'nama']);
 
-        return response()->json($donatur);
+        return response()->json($nasabah);
     }
 
     /**
@@ -248,17 +248,17 @@ class TransaksiController extends Controller
     public function store(Request $request)
     {
         // ===== Nasabah Baru dihilangkan: hanya Nasabah Lama =====
-        $checkDonatur = $request->input('status');
+        $checkNasabah = $request->input('status');
         $validation = [];
         $message = [];
-        if ($checkDonatur == 'baru') {
+        if ($checkNasabah == 'baru') {
             return redirect()
                 ->route('transaksi.create')
                 ->withInput()
                 ->with('error', 'Input nasabah baru tidak tersedia. Pilih nasabah lama yang terdaftar.');
         }
-        $validation['donatur_id'] = 'required';
-        $message['donatur_id.required'] = 'Nama donatur wajib dipilih';
+        $validation['nasabah_id'] = 'required';
+        $message['nasabah_id.required'] = 'Nama nasabah wajib dipilih';
         $jenis_transaksi = $request->input('jenis_transaksi');
         if (in_array($jenis_transaksi, ['transfer', 'rek_ulama'])) {
             $validation['image'] = 'required';
@@ -286,14 +286,14 @@ class TransaksiController extends Controller
             }
         }
 
-        // Validasi konsistensi donatur: untuk input non-admin, donatur_id
-        // harus milik pegawai_id yang dipakai (donatur.pegawai_id).
+        // Validasi konsistensi nasabah: untuk input non-admin, nasabah_id
+        // harus milik pegawai_id yang dipakai (nasabah.pegawai_id).
         if ($pegawai_id !== $selfPegawaiId || $inputScope !== null) {
-            $reqDonaturId = $request->input('donatur_id');
-            if ($reqDonaturId) {
-                $donaturPegawai = Donatur::where('id', $reqDonaturId)->value('pegawai_id');
-                if ($donaturPegawai === null || (int) $donaturPegawai !== (int) $pegawai_id) {
-                    // Donatur tidak milik pegawai terpilih: cegah input donatur lama
+            $reqNasabahId = $request->input('nasabah_id');
+            if ($reqNasabahId) {
+                $nasabahPegawai = Nasabah::where('id', $reqNasabahId)->value('pegawai_id');
+                if ($nasabahPegawai === null || (int) $nasabahPegawai !== (int) $pegawai_id) {
+                    // Nasabah tidak milik pegawai terpilih: cegah input nasabah lama
                     // milik pegawai lain — transaksi dengan nasabah lama ditolak.
                     return redirect()
                         ->route('transaksi.create')
@@ -303,23 +303,23 @@ class TransaksiController extends Controller
             }
         }
 
-        DB::transaction(function () use ($request, $checkDonatur, $jenis_transaksi, $googleService, $pegawai_id) {
-            if ($checkDonatur == 'baru') {
-                $dataDonatur['pegawai_id'] = $pegawai_id;
-                $dataDonatur['nama'] = $request->input('nama');
-                $dataDonatur['no_telepon'] = $request->input('no_telepon');
-                $dataDonatur['alamat'] = $request->input('alamat');
+        DB::transaction(function () use ($request, $checkNasabah, $jenis_transaksi, $googleService, $pegawai_id) {
+            if ($checkNasabah == 'baru') {
+                $dataNasabah['pegawai_id'] = $pegawai_id;
+                $dataNasabah['nama'] = $request->input('nama');
+                $dataNasabah['no_telepon'] = $request->input('no_telepon');
+                $dataNasabah['alamat'] = $request->input('alamat');
                 if ($request->input('pekerjaan') == 'lainnya') {
-                    $dataDonatur['pekerjaan'] = $request->input('pekerjaan') . '-' . $request->input('lainnya');
+                    $dataNasabah['pekerjaan'] = $request->input('pekerjaan') . '-' . $request->input('lainnya');
                 } else {
-                    $dataDonatur['pekerjaan'] = $request->input('pekerjaan');
+                    $dataNasabah['pekerjaan'] = $request->input('pekerjaan');
                 }
 
-                $donatur = Donatur::create($dataDonatur);
+                $nasabah = Nasabah::create($dataNasabah);
 
-                $donatur_id = $donatur->id;
+                $nasabah_id = $nasabah->id;
             } else {
-                $donatur_id = $request->input('donatur_id');
+                $nasabah_id = $request->input('nasabah_id');
             }
 
             if (in_array($jenis_transaksi, ['transfer', 'rek_ulama'])) {
@@ -336,7 +336,7 @@ class TransaksiController extends Controller
 
             $t['tanggal'] = date('Y-m-d', strtotime($request->input('tanggal')));
             $t['keterangan'] = $request->input('keterangan');
-            $t['donatur_id'] = $donatur_id;
+            $t['nasabah_id'] = $nasabah_id;
             $t['pegawai_id'] = $pegawai_id;
             $t['jenis_transaksi'] = $jenis_transaksi;
 
@@ -374,13 +374,13 @@ class TransaksiController extends Controller
     public function show($id)
     {
         $transaksi = Transaksi::leftJoin('pegawai as p', 'transaksi.pegawai_id', '=', 'p.id')
-            ->leftJoin('donatur as d', 'transaksi.donatur_id', '=', 'd.id')
+            ->leftJoin('nasabah as d', 'transaksi.nasabah_id', '=', 'd.id')
             ->leftJoin('file as f', 'transaksi.file_id', '=', 'f.id')
             ->where('transaksi.id', $id)
             ->select([
                 'transaksi.*',
                 'p.nama as nama_relawan',
-                'd.nama as nama_donatur',
+                'd.nama as nama_nasabah',
                 'f.path',
                 'f.nama as nama_file',
             ])
@@ -419,7 +419,7 @@ class TransaksiController extends Controller
     public function edit($id)
     {
         $transaksi = transaksi::find($id);
-        $transaksi->nama_donatur = $transaksi->donatur_id ? Donatur::where('id', $transaksi->donatur_id)->value('nama') : null;
+        $transaksi->nama_nasabah = $transaksi->nasabah_id ? Nasabah::where('id', $transaksi->nasabah_id)->value('nama') : null;
         // Load bukti transfer (file) agar preview tampil di form edit
         if (! empty($transaksi->file_id)) {
             $file = Files::find($transaksi->file_id);
@@ -440,14 +440,14 @@ class TransaksiController extends Controller
             ])
             ->where('transaksi_id', $id)->get();
         if (strtolower(Auth::user()->roles[0]->name) == 'admin') {
-            // Admin: donatur awal hanya milik penghimpun transaksi ini,
-            // agar dropdown langsung menampilkan donatur yang relevan.
+            // Admin: nasabah awal hanya milik penghimpun transaksi ini,
+            // agar dropdown langsung menampilkan nasabah yang relevan.
             // Jika user mengganti penghimpun, AJAX akan me-refresh daftar.
-            $donatur = Donatur::where('pegawai_id', $transaksi->pegawai_id)->orderBy('nama', 'asc')->get();
+            $nasabah = Nasabah::where('pegawai_id', $transaksi->pegawai_id)->orderBy('nama', 'asc')->get();
         } elseif (strtolower(Auth::user()->roles[0]->name) == 'supervisor') {
-            $donatur = Donatur::where('pegawai_id', $transaksi->pegawai_id)->orderBy('nama', 'asc')->get();
+            $nasabah = Nasabah::where('pegawai_id', $transaksi->pegawai_id)->orderBy('nama', 'asc')->get();
         } else {
-            $donatur = Donatur::where('pegawai_id', Auth::user()->pegawai_id)->orderBy('nama', 'asc')->get();
+            $nasabah = Nasabah::where('pegawai_id', Auth::user()->pegawai_id)->orderBy('nama', 'asc')->get();
         }
 
         $pekerjaan = Pekerjaan::get();
@@ -461,7 +461,7 @@ class TransaksiController extends Controller
             ])
             ->get();
 
-        return view('transaksi.edit', compact('title', 'action', 'redirectUrl', 'transaksi', 'relawan', 'donatur', 'pekerjaan', 'program'));
+        return view('transaksi.edit', compact('title', 'action', 'redirectUrl', 'transaksi', 'relawan', 'nasabah', 'pekerjaan', 'program'));
     }
 
     private function convertCurrenctToInt($currency)
@@ -482,11 +482,11 @@ class TransaksiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // $checkDonatur = $request->input('status');
+        // $checkNasabah = $request->input('status');
         $validation = [];
         $message = [];
-        $validation['donatur_id'] = 'required';
-        $message['donatur_id.required'] = 'Nama donatur wajib dipilih';
+        $validation['nasabah_id'] = 'required';
+        $message['nasabah_id.required'] = 'Nama nasabah wajib dipilih';
         $jenis_transaksi = $request->input('jenis_transaksi');
         // if($jenis_transaksi == 'transfer'){
         //     $validation['image'] = 'required';
@@ -501,11 +501,11 @@ class TransaksiController extends Controller
             } else {
                 $pegawai_id = Auth::User()->pegawai_id;
             }
-            $donatur_id = $request->input('donatur_id');
+            $nasabah_id = $request->input('nasabah_id');
 
             $t['tanggal'] = date('Y-m-d', strtotime($request->input('tanggal')));
             $t['keterangan'] = $request->input('keterangan');
-            $t['donatur_id'] = $donatur_id;
+            $t['nasabah_id'] = $nasabah_id;
             $t['pegawai_id'] = $pegawai_id;
             $t['jenis_transaksi'] = $jenis_transaksi;
 
@@ -634,12 +634,12 @@ class TransaksiController extends Controller
             ->get();
         $transaksi = Transaksi::leftJoin('transaksi_detail as td', 'transaksi.id', '=', 'td.transaksi_id')
             ->leftJoin('pegawai as p', 'transaksi.pegawai_id', '=', 'p.id')
-            ->leftJoin('donatur as d', 'transaksi.donatur_id', '=', 'd.id')
+            ->leftJoin('nasabah as d', 'transaksi.nasabah_id', '=', 'd.id')
             ->leftJoin('program', 'td.program_id', '=', 'program.id') // New left join for the program
             ->select([
                 'transaksi.tanggal as tanggal_donasi',
                 'p.nama as nama_relawan',
-                'd.nama as nama_donatur',
+                'd.nama as nama_nasabah',
                 'program.nama as nama_program', // Include program name in the select statement
                 DB::raw('sum(td.nominal_donasi) as total_donasi'),
                 'transaksi.id',

@@ -51,11 +51,11 @@ class GoogleSheetService
     {
         $transaksi = Transaksi::leftJoin('transaksi_detail as td', 'transaksi.id', '=', 'td.transaksi_id')
             ->leftJoin('pegawai as p', 'transaksi.pegawai_id', '=', 'p.id')
-            ->leftJoin('donatur as d', 'transaksi.donatur_id', '=', 'd.id')
+            ->leftJoin('nasabah as d', 'transaksi.nasabah_id', '=', 'd.id')
             ->select([
                 'transaksi.tanggal',
                 'p.nama as relawan',
-                'd.nama as donatur',
+                'd.nama as nasabah',
                 'd.alamat',
                 'd.no_telepon',
                 'transaksi.jenis_transaksi',
@@ -93,7 +93,7 @@ class GoogleSheetService
             $list = [];
             $list[] = date('Y-m-d', strtotime($item->tanggal));
             $list[] = $item->relawan;
-            $list[] = $item->donatur;
+            $list[] = $item->nasabah;
             $list[] = isset($item->alamat) ? $item->alamat : '';
             $list[] = isset($item->no_telepon) ? $item->no_telepon : '';
             $donasi = json_decode($item->donasi);
@@ -121,11 +121,11 @@ class GoogleSheetService
     public function storeTransaksi($idTransaksi, $donasi)
     {
         $transaksi = Transaksi::leftJoin('pegawai as p', 'transaksi.pegawai_id', '=', 'p.id')
-            ->leftJoin('donatur as d', 'transaksi.donatur_id', '=', 'd.id')
+            ->leftJoin('nasabah as d', 'transaksi.nasabah_id', '=', 'd.id')
             ->select([
                 'transaksi.tanggal',
                 'p.nama as relawan',
-                'd.nama as donatur',
+                'd.nama as nasabah',
                 'd.alamat',
                 'd.no_telepon',
                 'transaksi.keterangan',
@@ -139,7 +139,7 @@ class GoogleSheetService
 
         $list[] = date('Y-m-d', strtotime($transaksi->tanggal));
         $list[] = $transaksi->relawan;
-        $list[] = $transaksi->donatur;
+        $list[] = $transaksi->nasabah;
         $list[] = isset($transaksi->alamat) ? $transaksi->alamat : '';
         $list[] = isset($transaksi->no_telepon) ? $transaksi->no_telepon : '';
 
@@ -196,11 +196,11 @@ class GoogleSheetService
             $data[] = $dataSetor;
             $detail = SetoranDetail::leftJoin('transaksi as t', 'setoran_detail.transaksi_id', '=', 't.id')
                 ->leftJoin('transaksi_detail as td', 't.id', '=', 'td.transaksi_id')
-                ->leftJoin('donatur as d', 't.donatur_id', '=', 'd.id')
+                ->leftJoin('nasabah as d', 't.nasabah_id', '=', 'd.id')
                 ->where('setoran_detail.setoran_id', $item->id)
                 ->select([
                     't.tanggal',
-                    'd.nama as donatur',
+                    'd.nama as nasabah',
                     'd.alamat',
                     'd.no_telepon',
                     DB::raw('sum(nominal_donasi) as total_donasi'),
@@ -215,7 +215,7 @@ class GoogleSheetService
                 $detailSetor = [];
                 $detailSetor[] = date('Y-m-d', strtotime($row->tanggal));
                 $detailSetor[] = $item->relawan;
-                $detailSetor[] = $row->donatur;
+                $detailSetor[] = $row->nasabah;
                 $detailSetor[] = $row->alamat;
                 $detailSetor[] = $row->no_telepon;
                 $detailSetor[] = $row->total_donasi;
@@ -239,11 +239,11 @@ class GoogleSheetService
             ->first();
         $detail = SetoranDetail::leftJoin('transaksi as t', 'setoran_detail.transaksi_id', '=', 't.id')
             ->leftJoin('transaksi_detail as td', 't.id', '=', 'td.transaksi_id')
-            ->leftJoin('donatur as d', 't.donatur_id', '=', 'd.id')
+            ->leftJoin('nasabah as d', 't.nasabah_id', '=', 'd.id')
             ->where('setoran_detail.setoran_id', $setor_id)
             ->select([
                 't.tanggal',
-                'd.nama as donatur',
+                'd.nama as nasabah',
                 'd.alamat',
                 'd.no_telepon',
                 DB::raw('sum(nominal_donasi) as total_donasi'),
@@ -271,7 +271,7 @@ class GoogleSheetService
             $detailSetor = [];
             $detailSetor[] = date('Y-m-d', strtotime($item->tanggal));
             $detailSetor[] = $setor->relawan;
-            $detailSetor[] = $item->donatur;
+            $detailSetor[] = $item->nasabah;
             $detailSetor[] = isset($item->alamat) ? $item->alamat : '';
             $detailSetor[] = isset($item->no_telepon) ? $item->no_telepon : '';
             $detailSetor[] = $item->total_donasi;

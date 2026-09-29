@@ -129,7 +129,7 @@ $(document).ready(function(){
             <select class="form-control transaksi_id" name="transaksi_id[]">
                 <option value="" nominal="0">Pilih Transaksi ...</option>
                 @foreach($transaksi as $item)
-                    <option value="{{ $item->id }}" nominal="{{ $item->total_donasi }}">{{ $item->tanggal .' - '. $item->nama_donatur }}</option>
+                    <option value="{{ $item->id }}" nominal="{{ $item->total_donasi }}">{{ $item->tanggal .' - '. $item->nama_nasabah }}</option>
                 @endforeach
             </select>
         </div>

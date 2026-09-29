@@ -43,9 +43,9 @@
                     </a>
                 </li>
             @endcan
-            @can('donatur-list')
+            @can('nasabah-list')
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('donatur.index') }}">
+                    <a class="sidebar-link" href="{{ route('nasabah.index') }}">
                         <i class="align-middle" data-feather="sliders"></i>
                         <span class="align-middle">Manage Nasabah</span>
                     </a>

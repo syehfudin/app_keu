@@ -13,6 +13,6 @@ class Reha extends Model
     protected $guarded = ['id'];
 
     protected $fillable = [
-        'tanggal', 'pegawai_id', 'renku_donatur_lama', 'renku_donatur_baru', 'realisasi_donatur_lama', 'realisasi_donatur_baru', 'fu_donatur_lama', 'fu_donatur_baru', 'deal_donatur_lama', 'deal_donatur_baru', 'jenis_akad'
+        'tanggal', 'pegawai_id', 'renku_nasabah_lama', 'renku_nasabah_baru', 'realisasi_nasabah_lama', 'realisasi_nasabah_baru', 'fu_nasabah_lama', 'fu_nasabah_baru', 'deal_nasabah_lama', 'deal_nasabah_baru', 'jenis_akad'
     ];
 }

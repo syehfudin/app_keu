@@ -100,7 +100,7 @@
                             <div class="info-box-transaksi p-3 mb-3">
                                 <p class="detail-label">Nama Nasabah</p>
                                 <p class="detail-value">
-                                    <i class="fas fa-user mr-1"></i>{{ $transaksi->nama_donatur ?? '-' }}
+                                    <i class="fas fa-user mr-1"></i>{{ $transaksi->nama_nasabah ?? '-' }}
                                 </p>
                             </div>
                         </div>

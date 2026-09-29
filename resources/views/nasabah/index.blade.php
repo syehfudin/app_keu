@@ -7,8 +7,8 @@
 @section('content')
 <div class="container-fluid">
     <div class="d-flex align-items-center py-2 py-md-2">
-        @can('donatur-create')
-        <a class="btn btn-success" href="{{ route('donatur.create') }}"> Tambah Nasabah</a>
+        @can('nasabah-create')
+        <a class="btn btn-success" href="{{ route('nasabah.create') }}"> Tambah Nasabah</a>
         @endcan
     </div>
 
@@ -47,12 +47,12 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-bold mb-1">Cari Nama Nasabah</label>
-                            <input type="text" class="form-control" id="filter_nama" placeholder="Ketik nama nasabah..." oninput="applyDonaturFilterInstant()">
+                            <input type="text" class="form-control" id="filter_nama" placeholder="Ketik nama nasabah..." oninput="applyNasabahFilterInstant()">
                         </div>
                     </div>
                     <div class="mt-2">
-                        <button type="button" class="btn btn-primary" onclick="applyDonaturFilter()"><i class="fas fa-filter"></i> Filter</button>
-                        <button type="button" class="btn btn-secondary" onclick="resetDonaturFilter()"><i class="fas fa-redo"></i> Reset</button>
+                        <button type="button" class="btn btn-primary" onclick="applyNasabahFilter()"><i class="fas fa-filter"></i> Filter</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetNasabahFilter()"><i class="fas fa-redo"></i> Reset</button>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
         <div class="col-12 col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <table class="table table-striped" id="datatable-donatur">
+                    <table class="table table-striped" id="datatable-nasabah">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -101,8 +101,8 @@
 <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
 <script type="text/javascript">
-    let dataUrl = "{{ route('donatur.index_data') }}";
-    let tableSelector = "datatable-donatur";
+    let dataUrl = "{{ route('nasabah.index_data') }}";
+    let tableSelector = "datatable-nasabah";
 
     // ===== CLIENT-SIDE DataTables: load sekali, search/filter instan =====
     dt = $("#" + tableSelector).DataTable({
@@ -121,7 +121,7 @@
             { data: "nama_manager", searchable: false },
             { data: "nama_supervisor", searchable: false },
             { data: "nama_relawan", searchable: false },
-            { data: "nama_donatur", searchable: true },
+            { data: "nama_nasabah", searchable: true },
             { data: "action", orderable: false, searchable: false },
         ],
         columnDefs: [
@@ -136,13 +136,13 @@
     table = dt.$;
 
     // ===== SEARCH HANYA NAMA NASABAH: pakai dt.search() custom + column filter =====
-    // Karena global search akan men-filter hanya kolom searchable (nama_donatur),
+    // Karena global search akan men-filter hanya kolom searchable (nama_nasabah),
     // cukup panggil dt.search() per keystroke (instant, client-side).
-    let applyDonaturFilterInstant = () => dt.search($("#filter_nama").val());
+    let applyNasabahFilterInstant = () => dt.search($("#filter_nama").val());
 
-    let applyDonaturFilter = () => dt.draw();
+    let applyNasabahFilter = () => dt.draw();
 
-    let resetDonaturFilter = () => {
+    let resetNasabahFilter = () => {
         $("#filter_manager").val('');
         $("#filter_supervisor").val('');
         $("#filter_penghimpun").val('');

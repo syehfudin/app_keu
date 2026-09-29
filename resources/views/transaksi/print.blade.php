@@ -71,7 +71,7 @@
                 saya berupa :
             </th>
             <td style="width: 250px; text-align:right; font-weight:normal; font-size:1.3rem;">
-                Sudah terima dari : <br /> <span style="font-weight:bold;"> {{ $transaksi->nama_donatur }}</span>
+                Sudah terima dari : <br /> <span style="font-weight:bold;"> {{ $transaksi->nama_nasabah }}</span>
             </td>
 
         </tr>

@@ -38,9 +38,9 @@ class Pegawai extends Model
         return $this->hasMany(Pegawai::class, 'wakil_pegawai_id', 'id');
     }
 
-    public function Donatur()
+    public function Nasabah()
     {
-        return $this->belongsTo(Donatur::class);
+        return $this->belongsTo(Nasabah::class);
     }
 
     public function getRelawan($pegawai_id)

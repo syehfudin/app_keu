@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
-use App\Models\Donatur;
+use App\Models\Nasabah;
 use App\Models\User;
 use App\Models\Pekerjaan;
 use Auth;
@@ -245,8 +245,8 @@ class ImportController extends Controller
         // Build pekerjaan set
         $pekerjaanList = Pekerjaan::pluck('nama')->toArray();
 
-        // Build existing nasabah map (pegawai_id + nama => donatur)
-        $existingNasabah = Donatur::all()->keyBy(function ($item) {
+        // Build existing nasabah map (pegawai_id + nama => nasabah)
+        $existingNasabah = Nasabah::all()->keyBy(function ($item) {
             return $item->pegawai_id . '|' . strtolower(trim($item->nama));
         });
 
@@ -309,7 +309,7 @@ class ImportController extends Controller
                     $skipped++;
                 }
             } else {
-                Donatur::create([
+                Nasabah::create([
                     'pegawai_id' => $pegawaiId,
                     'nama' => $namaNasabah,
                     'alamat' => $alamat,

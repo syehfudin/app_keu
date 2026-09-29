@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Donatur extends Model
+class Nasabah extends Model
 {
     use HasFactory;
 
-    protected $table = 'donatur';
+    protected $table = 'nasabah';
 
     protected $gurarded = 'id';
 
@@ -19,7 +19,7 @@ class Donatur extends Model
 
     public function Pegawai()
     {
-        return $this->hasMany(Donatur::class, 'id', 'pegawai_id');
+        return $this->hasMany(Nasabah::class, 'id', 'pegawai_id');
     }
 
     /**
@@ -31,7 +31,7 @@ class Donatur extends Model
     }
 
     /**
-     * R2: relasi "diri" — terisi bila baris donatur ini adalah mirror
+     * R2: relasi "diri" — terisi bila baris nasabah ini adalah mirror
      * dari seorang pegawai (penghimpun juga terdaftar sebagai nasabah).
      */
     public function selfPegawai()

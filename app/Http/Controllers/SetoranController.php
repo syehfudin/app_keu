@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Donatur;
+use App\Models\Nasabah;
 use App\Models\File;
 use App\Models\Pekerjaan;
 use App\Models\Setoran;
@@ -102,13 +102,13 @@ class SetoranController extends Controller
 
         $queryTransaksi = Transaksi::leftJoin('transaksi_detail as td', 'transaksi.id', '=', 'td.transaksi_id')
             ->leftJoin('setoran_detail as sd', 'sd.transaksi_id', '=', 'transaksi.id')
-            ->leftJoin('donatur as d', 'transaksi.donatur_id', '=', 'd.id')
+            ->leftJoin('nasabah as d', 'transaksi.nasabah_id', '=', 'd.id')
             ->whereNull('sd.id')
             ->where('transaksi.jenis_transaksi', 'cash')
             ->select([
                 'transaksi.id',
                 DB::raw("TO_CHAR(cast(transaksi.tanggal as date), 'dd-mm-yyyy') as tanggal"),
-                'd.nama as nama_donatur',
+                'd.nama as nama_nasabah',
                 DB::raw('sum(td.nominal_donasi) as total_donasi'),
             ])
             ->groupBy([
@@ -214,11 +214,11 @@ class SetoranController extends Controller
 
         $setoran_detail = setoranDetail::leftJoin('transaksi as t', 'setoran_detail.transaksi_id', 't.id')
             ->leftJoin('transaksi_detail as td', 't.id', '=', 'td.transaksi_id')
-            ->leftJoin('donatur as d', 't.donatur_id', '=', 'd.id')
+            ->leftJoin('nasabah as d', 't.nasabah_id', '=', 'd.id')
             ->select([
                 't.tanggal',
                 DB::raw("to_char(t.tanggal, 'dd-mm-yyyy') as date"),
-                'd.nama as nama_donatur',
+                'd.nama as nama_nasabah',
                 DB::raw('sum(td.nominal_donasi) as total_donasi'),
             ])
             ->groupBy([
@@ -234,7 +234,7 @@ class SetoranController extends Controller
         $show = 'disabled';
         $redirectUrl = $this->redirectUrl;
 
-        $donatur = Donatur::get();
+        $nasabah = Nasabah::get();
         $pekerjaan = Pekerjaan::get();
         $relawan = User::join('pegawai as p', 'users.pegawai_id', '=', 'p.id')
             ->join('model_has_roles as mhr', 'users.id', '=', 'mhr.model_id')
@@ -246,7 +246,7 @@ class SetoranController extends Controller
             ])
             ->get();
 
-        return view('setoran.show', compact('title', 'action', 'redirectUrl', 'setoran', 'setoran_detail', 'show', 'relawan', 'donatur'));
+        return view('setoran.show', compact('title', 'action', 'redirectUrl', 'setoran', 'setoran_detail', 'show', 'relawan', 'nasabah'));
     }
 
     /**
@@ -264,13 +264,13 @@ class SetoranController extends Controller
 
         $queryTransaksi = Transaksi::leftJoin('transaksi_detail as td', 'transaksi.id', '=', 'td.transaksi_id')
             ->leftJoin('setoran_detail as sd', 'sd.transaksi_id', '=', 'transaksi.id')
-            ->leftJoin('donatur as d', 'transaksi.donatur_id', '=', 'd.id')
+            ->leftJoin('nasabah as d', 'transaksi.nasabah_id', '=', 'd.id')
             ->whereNull('sd.id')
             ->where('transaksi.jenis_transaksi', 'cash')
             ->select([
                 'transaksi.id',
                 DB::raw("TO_CHAR(cast(transaksi.tanggal as date), 'dd-mm-yyyy') as tanggal"),
-                'd.nama as nama_donatur',
+                'd.nama as nama_nasabah',
                 DB::raw('sum(td.nominal_donasi) as total_donasi'),
             ])
             ->groupBy([

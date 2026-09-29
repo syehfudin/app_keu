@@ -15,7 +15,7 @@ trait HasHierarchy
      * - lainnya                   : {diri} ∪ seluruh subtree bawahan (recursive, multi-level)
      *
      * Roll-up report otomatis: nasabah milik Manager/GM/Direktur/DirOps
-     * tetap miliknya (donatur.pegawai_id), dan dihitung di laporan
+     * tetap miliknya (nasabah.pegawai_id), dan dihitung di laporan
      * atasan wilayahnya lewat subtree traversal.
      */
     protected function getAccessiblePegawaiIds()

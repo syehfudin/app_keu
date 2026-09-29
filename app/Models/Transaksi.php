@@ -17,6 +17,6 @@ class Transaksi extends Model
     protected $table = 'transaksi';
 
     protected $fillable = [
-        'tanggal', 'pegawai_id', 'donatur_id', 'file_id', 'jenis_transaksi', 'keterangan',
+        'tanggal', 'pegawai_id', 'nasabah_id', 'file_id', 'jenis_transaksi', 'keterangan',
     ];
 }

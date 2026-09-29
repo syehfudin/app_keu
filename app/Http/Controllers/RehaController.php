@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Donatur;
+use App\Models\Nasabah;
 use App\Models\Pegawai;
 use DataTables;
 use App\Models\Reha;
@@ -44,14 +44,14 @@ class RehaController extends Controller
                 'report_harian.id',
                 'report_harian.tanggal',
                 'p.nama as nama_relawan',
-                'report_harian.renku_donatur_lama',
-                'report_harian.renku_donatur_baru',
-                'report_harian.realisasi_donatur_lama',
-                'report_harian.realisasi_donatur_baru',
-                'report_harian.fu_donatur_lama',
-                'report_harian.fu_donatur_baru',
-                'report_harian.deal_donatur_lama',
-                'report_harian.deal_donatur_baru',
+                'report_harian.renku_nasabah_lama',
+                'report_harian.renku_nasabah_baru',
+                'report_harian.realisasi_nasabah_lama',
+                'report_harian.realisasi_nasabah_baru',
+                'report_harian.fu_nasabah_lama',
+                'report_harian.fu_nasabah_baru',
+                'report_harian.deal_nasabah_lama',
+                'report_harian.deal_nasabah_baru',
                 'report_harian.jenis_akad',
             ]);
 
@@ -99,24 +99,24 @@ class RehaController extends Controller
             [
 
                 'pegawai_id' => 'required',
-                'renku_donatur_lama' => 'required',
-                'renku_donatur_baru' => 'required',
-                'realisasi_donatur_lama' => 'required',
-                'realisasi_donatur_baru' => 'required',
-                'fu_donatur_lama' => 'required',
-                'deal_donatur_lama' => 'required',
-                'deal_donatur_baru' => 'required',
+                'renku_nasabah_lama' => 'required',
+                'renku_nasabah_baru' => 'required',
+                'realisasi_nasabah_lama' => 'required',
+                'realisasi_nasabah_baru' => 'required',
+                'fu_nasabah_lama' => 'required',
+                'deal_nasabah_lama' => 'required',
+                'deal_nasabah_baru' => 'required',
                 'jenis_akad' => 'required',
             ],
             [
                 'pegawai_id.required' => 'Pegawai wajib diisi',
-                'renku_donatur_lama.required' => 'Renku Nasabah Lama wajib diisi',
-                'renku_donatur_baru.required' => 'Renku Nasabah Baru wajib diisi',
-                'realisasi_donatur_lama.required' => 'Realisasi Nasabah Lama wajib diisi',
-                'realisasi_donatur_baru.required' => 'Realisasi Nasabah Baru wajib diisi',
-                'fu_donatur_lama.required' => 'FU Nasabah Lama wajib diisi',
-                'deal_donatur_lama.required' => 'Deal Nasabah Lama wajib diisi',
-                'deal_donatur_baru.required' => 'Deal Nasabah Baru wajib diisi',
+                'renku_nasabah_lama.required' => 'Renku Nasabah Lama wajib diisi',
+                'renku_nasabah_baru.required' => 'Renku Nasabah Baru wajib diisi',
+                'realisasi_nasabah_lama.required' => 'Realisasi Nasabah Lama wajib diisi',
+                'realisasi_nasabah_baru.required' => 'Realisasi Nasabah Baru wajib diisi',
+                'fu_nasabah_lama.required' => 'FU Nasabah Lama wajib diisi',
+                'deal_nasabah_lama.required' => 'Deal Nasabah Lama wajib diisi',
+                'deal_nasabah_baru.required' => 'Deal Nasabah Baru wajib diisi',
                 'jenis_akad.required' => 'Jenis Akad wajib diisi',
             ]
         );
@@ -198,24 +198,24 @@ class RehaController extends Controller
             [
 
                 'pegawai_id' => 'required',
-                'renku_donatur_lama' => 'required',
-                'renku_donatur_baru' => 'required',
-                'realisasi_donatur_lama' => 'required',
-                'realisasi_donatur_baru' => 'required',
-                'fu_donatur_lama' => 'required',
-                'deal_donatur_lama' => 'required',
-                'deal_donatur_baru' => 'required',
+                'renku_nasabah_lama' => 'required',
+                'renku_nasabah_baru' => 'required',
+                'realisasi_nasabah_lama' => 'required',
+                'realisasi_nasabah_baru' => 'required',
+                'fu_nasabah_lama' => 'required',
+                'deal_nasabah_lama' => 'required',
+                'deal_nasabah_baru' => 'required',
                 'jenis_akad' => 'required',
             ],
             [
                 'pegawai_id.required' => 'Pegawai wajib diisi',
-                'renku_donatur_lama.required' => 'Renku Nasabah Lama wajib diisi',
-                'renku_donatur_baru.required' => 'Renku Nasabah Baru wajib diisi',
-                'realisasi_donatur_lama.required' => 'Realisasi Nasabah Lama wajib diisi',
-                'realisasi_donatur_baru.required' => 'Realisasi Nasabah Baru wajib diisi',
-                'fu_donatur_lama.required' => 'FU Nasabah Lama wajib diisi',
-                'deal_donatur_lama.required' => 'Deal Nasabah Lama wajib diisi',
-                'deal_donatur_baru.required' => 'Deal Nasabah Baru wajib diisi',
+                'renku_nasabah_lama.required' => 'Renku Nasabah Lama wajib diisi',
+                'renku_nasabah_baru.required' => 'Renku Nasabah Baru wajib diisi',
+                'realisasi_nasabah_lama.required' => 'Realisasi Nasabah Lama wajib diisi',
+                'realisasi_nasabah_baru.required' => 'Realisasi Nasabah Baru wajib diisi',
+                'fu_nasabah_lama.required' => 'FU Nasabah Lama wajib diisi',
+                'deal_nasabah_lama.required' => 'Deal Nasabah Lama wajib diisi',
+                'deal_nasabah_baru.required' => 'Deal Nasabah Baru wajib diisi',
                 'jenis_akad.required' => 'Jenis Akad wajib diisi',
             ]
         );

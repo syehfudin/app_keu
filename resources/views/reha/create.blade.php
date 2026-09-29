@@ -54,13 +54,13 @@
                                 <div class="d-flex align-items-start mt-3">
                                     <div style="flex: 1;">
                                         <label> Nasabah Lama : </label>
-                                        <input type="number" class="form-control" name="renku_donatur_lama"
-                                            {{ @$show }} value="{{ @$reha->renku_donatur_lama ?? 0 }}">
+                                        <input type="number" class="form-control" name="renku_nasabah_lama"
+                                            {{ @$show }} value="{{ @$reha->renku_nasabah_lama ?? 0 }}">
                                     </div>
                                     <div style="flex: 1; margin-left: 10px;">
                                         <label> Nasabah Baru : </label>
-                                        <input type="number" class="form-control" name="renku_donatur_baru"
-                                            {{ @$show }} value="{{ @$reha->renku_donatur_baru ?? 0 }}">
+                                        <input type="number" class="form-control" name="renku_nasabah_baru"
+                                            {{ @$show }} value="{{ @$reha->renku_nasabah_baru ?? 0 }}">
                                     </div>
                                 </div>
                             </div>
@@ -69,13 +69,13 @@
                                 <div class="d-flex align-items-start mt-3">
                                     <div style="flex: 1;">
                                         <label> Nasabah Lama : </label>
-                                        <input type="number" class="form-control" name="realisasi_donatur_lama"
-                                            {{ @$show }} value="{{ @$reha->realisasi_donatur_lama ?? 0 }}">
+                                        <input type="number" class="form-control" name="realisasi_nasabah_lama"
+                                            {{ @$show }} value="{{ @$reha->realisasi_nasabah_lama ?? 0 }}">
                                     </div>
                                     <div style="flex: 1; margin-left: 10px;">
                                         <label> Nasabah Baru : </label>
-                                        <input type="number" class="form-control" name="realisasi_donatur_baru"
-                                            {{ @$show }} value="{{ @$reha->realisasi_donatur_baru ?? 0 }}">
+                                        <input type="number" class="form-control" name="realisasi_nasabah_baru"
+                                            {{ @$show }} value="{{ @$reha->realisasi_nasabah_baru ?? 0 }}">
                                     </div>
                                 </div>
                             </div>
@@ -84,13 +84,13 @@
                                 <div class="d-flex align-items-start mt-3">
                                     <div style="flex: 1;">
                                         <label> Nasabah Lama : </label>
-                                        <input type="number" class="form-control" name="fu_donatur_lama"
-                                            {{ @$show }} value="{{ @$reha->fu_donatur_lama ?? 0 }}">
+                                        <input type="number" class="form-control" name="fu_nasabah_lama"
+                                            {{ @$show }} value="{{ @$reha->fu_nasabah_lama ?? 0 }}">
                                     </div>
                                     <div style="flex: 1; margin-left: 10px;">
                                         <label> Nasabah Baru : </label>
-                                        <input type="number" class="form-control" name="fu_donatur_baru"
-                                            {{ @$show }} value="{{ @$reha->fu_donatur_baru ?? 0 }}">
+                                        <input type="number" class="form-control" name="fu_nasabah_baru"
+                                            {{ @$show }} value="{{ @$reha->fu_nasabah_baru ?? 0 }}">
                                     </div>
                                 </div>
                             </div>
@@ -99,13 +99,13 @@
                                 <div class="d-flex align-items-start mt-3">
                                     <div style="flex: 1;">
                                         <label> Nasabah Lama : </label>
-                                        <input type="number" class="form-control" name="deal_donatur_lama"
-                                            {{ @$show }} value="{{ @$reha->deal_donatur_lama ?? 0 }}">
+                                        <input type="number" class="form-control" name="deal_nasabah_lama"
+                                            {{ @$show }} value="{{ @$reha->deal_nasabah_lama ?? 0 }}">
                                     </div>
                                     <div style="flex: 1; margin-left: 10px;">
                                         <label> Nasabah Baru : </label>
-                                        <input type="number" class="form-control" name="deal_donatur_baru"
-                                            {{ @$show }} value="{{ @$reha->deal_donatur_baru ?? 0 }}">
+                                        <input type="number" class="form-control" name="deal_nasabah_baru"
+                                            {{ @$show }} value="{{ @$reha->deal_nasabah_baru ?? 0 }}">
                                     </div>
 
                                 </div>

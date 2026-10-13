@@ -14,47 +14,38 @@ class PermissionTableSeeder extends Seeder
      */
     public function run()
     {
-        $permissions = [
-            // 'role-list',
-            // 'role-create',
-            // 'role-edit',
-            // 'role-delete',
-            // 'pegawai-list',
-            // 'pegawai-create',
-            // 'pegawai-edit',
-            // 'pegawai-delete',
-            // 'nasabah-list',
-            // 'nasabah-create',
-            // 'nasabah-edit',
-            // 'nasabah-delete',
-            // 'pekerjaan-list',
-            // 'pekerjaan-create',
-            // 'pekerjaan-edit',
-            // 'pekerjaan-delete',
-            // 'program-list',
-            // 'program-create',
-            // 'program-edit',
-            // 'program-delete',
-            // 'transaksi-list',
-            // 'transaksi-create',
-            // 'transaksi-edit',
-            // 'transaksi-delete',
-            // 'setoran-list',
-            // 'setoran-create',
-            // 'setoran-edit',
-            // 'setoran-delete',
-            'reha-list',
-            'reha-create',
-            'reha-edit',
-            'reha-delete',
-            // 'korel-list',
-            // 'korel-create',
-            // 'korel-edit',
-            // 'korel-delete',
+        // Permissions referenced by controller middleware (permission:*)
+        // and by @can(...) gates in resources/views.
+        $modules = [
+            'role',
+            'pegawai',
+            'nasabah',
+            'pekerjaan',
+            'program',
+            'product',
+            'transaksi',
+            'setoran',
+            'korel',
+            'reha',
         ];
 
+        $permissions = [];
+        foreach ($modules as $module) {
+            foreach (['list', 'create', 'edit', 'delete'] as $action) {
+                $permissions[] = "{$module}-{$action}";
+            }
+        }
+
+        // Modules that only expose a subset of actions
+        $permissions[] = 'import-list';
+        $permissions[] = 'import-create';
+        $permissions[] = 'tunai-list';
+
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate([
+                'name' => $permission,
+                'guard_name' => 'web',
+            ]);
         }
     }
 }

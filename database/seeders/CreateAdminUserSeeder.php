@@ -26,7 +26,7 @@ class CreateAdminUserSeeder extends Seeder
 
         $user = User::create([
             'pegawai_id' => $pegawai->id,
-            'username' => 'LaravelTuts',
+            'username' => 'superadmin',
             // 'email'     => 'admin@laraveltuts.com',
             'password' => bcrypt('G4nt3ng!'),
         ]);

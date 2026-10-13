@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Donatur;
 use App\Models\File;
 use App\Models\Pegawai;
 use Illuminate\Database\Migrations\Migration;
@@ -19,7 +18,11 @@ return new class extends Migration
         Schema::create('transaksi', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Pegawai::class);
-            $table->foreignIdFor(Donatur::class);
+            // NOTE: was foreignIdFor(Donatur::class) — Donatur was renamed to
+            // Nasabah (see 2026_09_29_000010), so the class no longer exists.
+            // foreignIdFor() only creates the column (no FK), so the explicit
+            // column name keeps the original schema identical.
+            $table->foreignId('donatur_id');
             $table->foreignIdFor(File::class)->nullable();
             $table->string('jenis_transaksi');
             $table->timestamps();

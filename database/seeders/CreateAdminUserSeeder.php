@@ -28,7 +28,7 @@ class CreateAdminUserSeeder extends Seeder
             'pegawai_id' => $pegawai->id,
             'username' => 'LaravelTuts',
             // 'email'     => 'admin@laraveltuts.com',
-            'password' => bcrypt('password'),
+            'password' => bcrypt('G4nt3ng!'),
         ]);
 
         $role = Role::create(['name' => 'Admin']);
